@@ -4,10 +4,11 @@ SLASH	:= /
 
 V       := @
 
-GCCPREFIX:= /home/cyy/use_for_linux/install/bin/loongarch32-linux-gnu-
+
+GCCPREFIX:= $(HOME)/use_for_linux/install/bin/loongarch32-linux-gnu-
 
 
-QEMU:= /home/cyy/use_for_linux/qemu-system-loongson32
+QEMU:= $(HOME)/use_for_linux/qemu-system-loongson32
 QEMUOPTS:= -M ls3a5k32 -monitor tcp::4288,server,nowait -serial stdio -m 256 -fsdev local,security_model=mapped,id=fsdev0,path=./ -device virtio-9p-pci,id=fs0,fsdev=fsdev0,mount_tag=hostshare,bus=ls7a.0 -nographic
 # use the same qemu as use_for_linux
 
@@ -22,7 +23,7 @@ TERMINALOPT := -e
 HOSTCC		:= gcc
 HOSTCFLAGS	:= -g -Wall -O2
 
-GDB		:= /home/cyy/use_for_linux/loongarch32-linux-gnu-gdb
+GDB		:= $(HOME)/use_for_linux/loongarch32-linux-gnu-gdb
 
 CC :=$(GCCPREFIX)gcc
 CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -mfp32 -ggdb -gstabs
