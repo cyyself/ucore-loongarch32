@@ -11,12 +11,12 @@
 
 unsigned int serial_in(unsigned char *base, int offset)
 {
-	return readb(PORT(base, offset));
+	return inb(PORT(base, offset));
 }
 
 void serial_out(unsigned char *base, int offset, int value)
 {
-	writeb(value, PORT(base, offset));
+	outb(PORT(base, offset), value);
 }
 
 void prom_putchar(char c)
