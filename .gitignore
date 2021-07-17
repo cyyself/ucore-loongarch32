@@ -1,0 +1,5 @@
+*.o
+boot/loader
+*.d
+obj/
+tools/mkfs
