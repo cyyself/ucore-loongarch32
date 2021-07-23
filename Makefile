@@ -23,7 +23,7 @@ TERMINALOPT := -e
 HOSTCC		:= gcc
 HOSTCFLAGS	:= -g -Wall -O2
 
-GDB		:= $(HOME)/use_for_linux/loongarch32-linux-gnu-gdb
+GDB		:= $(HOME)/use_for_linux/loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
 CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -mfp32 -ggdb -gstabs
