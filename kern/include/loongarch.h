@@ -47,6 +47,7 @@ static inline unsigned __divu5(unsigned int n) {
   return q + (13*r >> 6);
 }
 
+
 static inline uint8_t inb(uint32_t port) __attribute__((always_inline));
 static inline void outb(uint32_t port, uint8_t data) __attribute__((always_inline));
 static inline uint32_t inw(uint32_t port) __attribute__((always_inline));
@@ -74,7 +75,13 @@ outw(uint32_t port, uint32_t data) {
     *((volatile uintptr_t *) port) = data;
 }
 
-//TODO: #define TIMER0_IRQ       7
+
+/* board specification */
+#define COM1            0x9fe001e0
+#define COM1_IRQ        2
+#define COM1_BAUD_DDL   0x23
+
+#define TIMER0_IRQ       11
 
 
 #endif /* !__LIBS_LOONGARCH_H__ */

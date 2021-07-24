@@ -1,11 +1,9 @@
 #include <defs.h>
-#include <thumips.h>
+#include <loongarch.h>
 #include <stdio.h>
 #include <string.h>
 #include <picirq.h>
-#include <trap.h>
-#include <memlayout.h>
-#include <sync.h>
+#include <intr.h>
 
 /* stupid I/O delay routine necessitated by historical PC design flaws */
 static void
@@ -99,8 +97,8 @@ void serial_int_handler(void *opaque)
     return ;
   //int c = serial_proc_data();
   int c = cons_getc(c);
-  extern void dev_stdin_write(char c);
-  dev_stdin_write(c);
+  //extern void dev_stdin_write(char c);
+  //dev_stdin_write(c);
 }
 
 /* *
@@ -155,7 +153,7 @@ cons_init(void) {
 /* cons_putc - print a single character @c to console devices */
 void
 cons_putc(int c) {
-    bool intr_flag;
+    long intr_flag;
     local_intr_save(intr_flag);
     {
         serial_putc(c);
@@ -170,7 +168,7 @@ cons_putc(int c) {
 int
 cons_getc(void) {
     int c = 0;
-    bool intr_flag;
+    long intr_flag;
     local_intr_save(intr_flag);
     {
         // poll for any pending input characters,

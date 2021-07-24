@@ -5,7 +5,8 @@ SLASH	:= /
 V       := @
 
 
-GCCPREFIX:= $(HOME)/use_for_linux/install/bin/loongarch32-linux-gnu-
+TOOLCHAIN:=  $(HOME)/use_for_linux/install
+GCCPREFIX:= $(TOOLCHAIN)/bin/loongarch32-linux-gnu-
 
 
 QEMU:= $(HOME)/use_for_linux/qemu-system-loongson32
@@ -26,13 +27,13 @@ HOSTCFLAGS	:= -g -Wall -O2
 GDB		:= $(HOME)/use_for_linux/loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -mfp32 -ggdb -gstabs
+CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -mfp32 -ggdb -gstabs -mlcsr
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
 AS      := $(GCCPREFIX)as -g
 AR      := $(GCCPREFIX)ar
-LDFLAGS	+= -nostdlib
+LDFLAGS	+= -nostdlib -m elf32loongarch
 
 OBJCOPY := $(GCCPREFIX)objcopy
 OBJDUMP := $(GCCPREFIX)objdump
@@ -55,7 +56,7 @@ BINDIR	:= bin
 SRCDIR  := kern
 DEPDIR  := dep
 
-MODULES   := init
+MODULES   := init driver libs
 
 SRC_DIR   := $(addprefix $(SRCDIR)/,$(MODULES))
 BUILD_DIR := $(addprefix $(OBJDIR)/,$(MODULES))
@@ -68,6 +69,7 @@ ASMSRC    := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 OBJ       += $(patsubst $(SRCDIR)/%.S, $(OBJDIR)/%.o, $(ASMSRC))
 INCLUDES  := $(addprefix -I,$(SRC_DIR))
 INCLUDES  += -I$(SRCDIR)/include
+INCLUDES  += -I$(TOOLCHAIN)/lib/gcc/loongarch32-linux-gnu/8.3.0/include
 
 USER_APPLIST:= pwd cat sh ls forktest yield hello faultreadkernel faultread badarg waitkill pgdir exit sleep
 INITRD_BLOCK_CNT:= 4000
