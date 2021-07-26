@@ -18,8 +18,7 @@ int clock_int_handler(void * data)
 //    cons_putc('A');
   write_csr_tmintclear(CSR_TMINTCLR_TI);
   //run_timer_list();
-  //reload_timer(); 
-  //no need to reload by software on loongarch
+  //reload_timer(); //no need to reload by software on loongarch
   return 0;
 }
 
