@@ -3,3 +3,5 @@ boot/loader
 *.d
 obj/
 tools/mkfs
+.vscode
+core
