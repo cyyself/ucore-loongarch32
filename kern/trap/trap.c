@@ -27,5 +27,7 @@ void set_exception_handler() {
 
 void
 loongarch_trap(struct trapframe *tf) {
-    kprintf("epc = %x",tf->tf_era);
+    struct trapframe *tf2 = tf;
+    //kprintf("epc = %x",tf->tf_era);
+    kprintf("100 ticks\n");
 }

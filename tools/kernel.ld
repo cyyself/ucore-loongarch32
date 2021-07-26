@@ -15,7 +15,7 @@ SECTIONS
     *(.mips16.fn.*) 
     *(.mips16.call.*) /* for MIPS */
     *(.rodata) *(.rodata.*) *(.gnu.linkonce.r*) *(.rodata1)
-    . = ALIGN(65536);
+    . = ALIGN(4096);
     *(.ramexv)
   }
 

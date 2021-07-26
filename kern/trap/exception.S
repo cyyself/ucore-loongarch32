@@ -15,6 +15,14 @@ ramExcHandle_general:
     // Save previous stack pointer in t1
     move    t1, sp
     csrwr   t1, LISA_CSR_KS2
+
+    /*
+        Warning: csrwr will bring the old csr register value into rd, 
+        not only just write rd to csr register,
+        so you may see the rd changed.
+        It's documented in the manual from loongarch.
+    */
+
     // check if user mode
     csrrd   t0, LISA_CSR_PRMD
     andi    t0, t0, 3
@@ -32,6 +40,7 @@ ramExcHandle_general:
     */
 1:
     csrrd   t0, LISA_CSR_EXST
+    csrrd   t1, LISA_CSR_KS2
     b common_exception
 
 common_exception:
@@ -77,24 +86,18 @@ common_exception:
     st.w    a0, sp, 48
     st.w    v1, sp, 44
     st.w    v0, sp, 40
-    st.w    t1, sp, 36 // replace sp with real sp
+    st.w    t1, sp, 36 // replace sp with real sp, now use t1 for free
     st.w    tp, sp, 32
     // save real t0 and t1 after real sp (stored in t1 previously) stored
     csrrd   t1, LISA_CSR_KS1
-    st.w    t1, sp, 80
+    st.w    t1, sp, 84
     csrrd   t1, LISA_CSR_KS0
-    st.w    t1, sp, 76
-    // now use t1 for free
+    st.w    t1, sp, 80
     
     // replace with real value
     // save tf_era after t0 and t1 saved
     csrrd   t1, LISA_CSR_EPC
     st.w    t1, sp, 152
-    // save real t0 and t1
-    csrrd   t1, LISA_CSR_KS1
-    st.w    t1, sp, 84
-    csrrd   t0, LISA_CSR_KS0
-    st.w    t0, sp, 80
 
    /*
     * Save remaining exception context information.
@@ -111,13 +114,13 @@ common_exception:
     // store badv
     csrrd   t0, LISA_CSR_BADV
     st.w    t0, sp, 16
-    st.w    zero, sp, 16
+    st.w    zero, sp, 12
     // support nested interrupt
 
     // IE and PLV will automatically set to 0 when trap occur
 
     // set trapframe as function argument
-    addi.w  a0, sp, 12
+    addi.w  a0, sp, 16
     la.abs  t0, loongarch_trap
     jirl    ra, t0, 0
     //bl loongarch_trap
