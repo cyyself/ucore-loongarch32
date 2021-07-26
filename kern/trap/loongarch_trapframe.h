@@ -15,4 +15,9 @@ struct trapframe {
     uint32_t tf_era; // CSR[0x6] same as epc on mips
 };
 
+/*
+ * LA32 exception codes.
+ */
+#define EX_IRQ    0    /* Interrupt */
+
 #endif /* _LA32_TRAPFRAME_H_ */

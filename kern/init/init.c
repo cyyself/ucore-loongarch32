@@ -5,7 +5,7 @@
 #include <trap.h>
 
 void cpu_idle() {
-    while(1);
+    while(1) asm volatile ("\tidle 0\n"::); // TODO: idle level
 }
 
 void setup_exception_vector()
