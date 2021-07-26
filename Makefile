@@ -56,7 +56,7 @@ BINDIR	:= bin
 SRCDIR  := kern
 DEPDIR  := dep
 
-MODULES   := init driver libs
+MODULES   := init driver libs trap mm
 
 SRC_DIR   := $(addprefix $(SRCDIR)/,$(MODULES))
 BUILD_DIR := $(addprefix $(OBJDIR)/,$(MODULES))
@@ -78,7 +78,7 @@ INITRD_BLOCK_CNT:= 4000
 
 DEPENDS := $(patsubst $(SRCDIR)/%.c, $(DEPDIR)/%.d, $(SRC))
 
-.PHONY: all checkdirs clean qemu debug
+.PHONY: all checkdirs clean qemu debug objdump
 
 all: checkdirs $(OBJDIR)/ucore-kernel
 
@@ -119,6 +119,9 @@ debug: $(OBJDIR)/ucore-kernel
 
 gdb: $(OBJDIR)/ucore-kernel
 	$(GDB) $(OBJDIR)/ucore-kernel
+
+objdump: $(OBJDIR)/ucore-kernel
+	$(TOOLCHAIN)/bin/loongarch32-linux-gnu-objdump -S $(OBJDIR)/ucore-kernel
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPENDS)

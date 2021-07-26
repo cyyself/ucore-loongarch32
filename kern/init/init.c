@@ -1,14 +1,23 @@
 #include <defs.h>
 #include <loongarch.h>
+#include <asm/loongisa_csr.h>
 #include <picirq.h>
+#include <trap.h>
 
 void cpu_idle() {
     while(1);
 }
 
+void setup_exception_vector()
+{
+    extern unsigned char __exception_vector[];
+    __lcsr_csrwr(__exception_vector + 0x4000, LISA_CSR_EBASE);
+    set_exception_handler();
+}
+
 void __noreturn
 kern_init(void) {
-    
+    setup_exception_vector();
     
     // TODO:
     //tlb_invalidate_all();
@@ -17,6 +26,7 @@ kern_init(void) {
 
     
     cons_init();                // init the console
+    clock_init();
     /*
     clock_init();               // init clock interrupt
 
@@ -38,9 +48,7 @@ kern_init(void) {
     ide_init();
     fs_init();
 
-    intr_enable();              // enable irq interrupt
-    //*(int*)(0x00124) = 0x432;
-    //asm volatile("divu $1, $1, $1");
     */
+    intr_enable();              // enable irq interrupt
     cpu_idle();
 }

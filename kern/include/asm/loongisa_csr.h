@@ -1,6 +1,14 @@
 #ifndef __ASM_MACH_LOONGSON32_LOONGISA_CSR_H_
 #define __ASM_MACH_LOONGSON32_LOONGISA_CSR_H_
 
+#ifdef __ASSEMBLY__
+#define _ULCAST_
+#define _U64CAST_
+#else
+#define _ULCAST_ (unsigned long)
+#define _U64CAST_ (u64)
+#endif
+
 /* major opcode for CSR instruction */
 #define LISA_OPC_MAJOR_CSR	0
 
