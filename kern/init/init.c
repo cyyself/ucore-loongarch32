@@ -3,6 +3,7 @@
 #include <asm/loongisa_csr.h>
 #include <picirq.h>
 #include <trap.h>
+#include <kdebug.h>
 
 void cpu_idle() {
     while(1) asm volatile ("\tidle 0\n"::); // TODO: idle level
@@ -12,7 +13,6 @@ void setup_exception_vector()
 {
     extern unsigned char __exception_vector[];
     __lcsr_csrwr(__exception_vector + 0x4000, LISA_CSR_EBASE);
-    set_exception_handler();
 }
 
 void __noreturn
@@ -26,9 +26,8 @@ kern_init(void) {
 
     
     cons_init();                // init the console
-    clock_init();
-    /*
     clock_init();               // init clock interrupt
+    /*
 
     check_initrd();
     */
@@ -36,9 +35,9 @@ kern_init(void) {
     //uart_prints(message);
     kprintf(message);
 
-    /*
+    
     print_kerninfo();
-
+    /*
     pmm_init();                 // init physical memory management
 
     vmm_init();                 // init virtual memory management

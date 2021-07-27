@@ -1,14 +1,15 @@
 #include <trap.h>
 #include <stdio.h>
 #include <string.h>
-#include <loongarch_trapframe.h>
 #include <loongarch.h>
 #include <asm/loongisa_csr.h>
 #include <clock.h>
 #include <console.h>
+#include <assert.h>
 
 #define EXCCODE_GENERIC 32
 #define vec_size 512
+#define PPLV 3
 
 #define  CAUSEB_EXCCODE		16
 #define  CAUSEF_EXCCODE		(_ULCAST_(63)  <<  CAUSEB_EXCCODE)
@@ -18,18 +19,9 @@ static void local_flush_icache_range(unsigned long start, unsigned long end)
 	asm volatile ("\tibar 0\n"::);
 }
 
-/* Install CPU exception handler */
-void set_handler(unsigned long offset, void *addr, unsigned long size)
-{
-  extern unsigned char __exception_vector[];
-  memcpy((void *)(__exception_vector + offset), addr, size);
-	local_flush_icache_range(__exception_vector + offset, __exception_vector + offset + size);
-}
-
-void set_exception_handler() {
-  extern unsigned char __exception_vector[], ramExcHandle_general[];
-  kprintf("ebase = 0x%x\n",__exception_vector);
-  //set_handler(EXCCODE_GENERIC * vec_size , &ramExcHandle_general, vec_size);
+bool
+trap_in_kernel(struct trapframe *tf) {
+  return !(tf->tf_prmd & PPLV);
 }
 
 void print_regs(struct pushregs *regs)
@@ -78,9 +70,7 @@ static void interrupt_handler(struct trapframe *tf)
           break;
         default:
           print_trapframe(tf);
-          kprintf("Unhandled Exception");
-          while(1); // panic
-          //panic("Unknown interrupt!");
+          panic("Unknown interrupt!");
       }
     }
   }
@@ -93,11 +83,34 @@ trap_dispatch(struct trapframe *tf) {
     case EX_IRQ:
       interrupt_handler(tf);
       break;
+    case EX_RI:
+      print_trapframe(tf);
+      if(trap_in_kernel(tf)) {
+        panic("hey man! Do NOT use that insn!");
+      }
+      //do_exit(-E_KILLED); TODO: 进程管理
+      break;
+    case EX_IPE:
+      print_trapframe(tf);
+      if(trap_in_kernel(tf)) {
+        panic("CpU exception should not occur in kernel mode!");
+      }
+      //do_exit(-E_KILLED); TODO: 进程管理
+    case EX_SYS:
+      tf->tf_era += 4;
+      //syscall(); TODO: syscall
+    case EX_ADE:
+      if(trap_in_kernel(tf)){
+        print_trapframe(tf);
+        panic("Alignment Error");
+      }else{
+        print_trapframe(tf);
+        //do_exit(-E_KILLED);  TODO: 进程管理
+      }
+      break;
     default:
       print_trapframe(tf);
-      kprintf("Unhandled Exception");
-      while(1); // panic
-      //panic("Unhandled Exception");
+      panic("Unhandled Exception");
   }
 }
 
