@@ -5,6 +5,7 @@
 #include <loongarch.h>
 #include <asm/loongisa_csr.h>
 #include <clock.h>
+#include <console.h>
 
 #define EXCCODE_GENERIC 32
 #define vec_size 512
@@ -64,7 +65,7 @@ print_trapframe(struct trapframe *tf) {
 static void interrupt_handler(struct trapframe *tf)
 {
   extern clock_int_handler(void*);
-  //extern serial_int_handler(void*);
+  extern serial_int_handler(void*);
   int i;
   for(i=0;i<13;i++){
     if(tf->tf_estat & (1<<i)){
@@ -73,7 +74,7 @@ static void interrupt_handler(struct trapframe *tf)
           clock_int_handler(NULL);
           break;
         case COM1_IRQ:
-          //serial_int_handler(NULL);
+          serial_int_handler(NULL);
           break;
         default:
           print_trapframe(tf);

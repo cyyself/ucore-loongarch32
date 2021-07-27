@@ -80,11 +80,11 @@ DEPENDS := $(patsubst $(SRCDIR)/%.c, $(DEPDIR)/%.d, $(SRC))
 
 .PHONY: all checkdirs clean qemu debug objdump
 
-all: checkdirs $(OBJDIR)/ucore-kernel
+all: $(OBJDIR)/ucore-kernel
 
 $(shell mkdir -p $(DEP_DIR))
 
-$(OBJDIR)/ucore-kernel:   $(OBJ) tools/kernel.ld
+$(OBJDIR)/ucore-kernel:  checkdirs $(OBJ) tools/kernel.ld
 	@echo LINK $@
 	$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) -o $@
 
