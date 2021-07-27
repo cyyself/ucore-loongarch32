@@ -10,20 +10,25 @@ volatile size_t ticks;
 
 #define HZ 100
 
+static void reload_timer()
+{
+  write_csr_tmintclear(CSR_TMINTCLR_TI);
+}
+
 int clock_int_handler(void * data)
 {
   ticks++;
   if (ticks % 100 == 0) kprintf("100 ticks\n");
 //  if( (ticks & 0x1F) == 0)
 //    cons_putc('A');
-  write_csr_tmintclear(CSR_TMINTCLR_TI);
   //run_timer_list();
-  //reload_timer(); //no need to reload by software on loongarch
+  reload_timer();
   return 0;
 }
 
 void
 clock_init(void) {
+  // setup timer
   unsigned long timer_config;
   unsigned long period = 200000000;
 	period = period / HZ;
