@@ -28,7 +28,7 @@ void set_handler(unsigned long offset, void *addr, unsigned long size)
 void set_exception_handler() {
   extern unsigned char __exception_vector[], ramExcHandle_general[];
   kprintf("ebase = 0x%x\n",__exception_vector);
-  set_handler(EXCCODE_GENERIC * vec_size , &ramExcHandle_general, vec_size);
+  //set_handler(EXCCODE_GENERIC * vec_size , &ramExcHandle_general, vec_size);
 }
 
 void print_regs(struct pushregs *regs)
