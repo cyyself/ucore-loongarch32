@@ -15,7 +15,7 @@ ramExcHandle_general:
     // Save previous stack pointer in t1
     move    t1, sp
     csrwr   t1, LISA_CSR_KS2
-
+    //t1 saved the vaual of KS2,KS2 saved sp
     /*
         Warning: csrwr will bring the old csr register value into rd, 
         not only just write rd to csr register,
@@ -24,7 +24,7 @@ ramExcHandle_general:
     */
 
     // check if user mode
-    csrrd   t0, LISA_CSR_PRMD
+    csrrd   t0, LISA_CSR_PRMD  
     andi    t0, t0, 3
     beq     t0, zero, 1f
     /* Coming from user mode - load kernel stack into sp */
@@ -39,7 +39,9 @@ ramExcHandle_general:
     // addi.w  sp, t0, KSTACKSIZE
     */
 1:
+    //saved EXST to t0 for save EXST to sp later(line 114) 
     csrrd   t0, LISA_CSR_EXST
+    //return KS2
     csrrd   t1, LISA_CSR_KS2
     b common_exception
 
