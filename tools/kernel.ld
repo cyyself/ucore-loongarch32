@@ -2,7 +2,7 @@ OUTPUT_ARCH(loongarch)
 ENTRY(kernel_entry)
 SECTIONS
 {
-    . = 0xa0300000;
+    . = 0x80000000;
 
   .text      :
   {

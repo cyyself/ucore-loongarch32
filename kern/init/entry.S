@@ -33,11 +33,11 @@ reset:
     addi.w sp, sp, -16
 	# Config direct window and set PG
 	# 0x9800 xxxx xxxx xxxx
-	li	t0, 0xa0000011	# CA, PLV0
+	li	t0, 0x80000011	# CA, PLV0
 	csrwr	t0, LISA_CSR_DMWIN0
 	# 0x9000 xxxx xxxx xxxx
 	
-	li      t0, 0x8a000001
+	li      t0, 0xaa000001
 	csrwr	t0, LISA_CSR_DMWIN1
 
 	# Enable PG
