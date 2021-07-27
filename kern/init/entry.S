@@ -32,14 +32,12 @@ reset:
 # TODO: CSR Write
     addi.w sp, sp, -16
 	# Config direct window and set PG
-	# 0x9800 xxxx xxxx xxxx
-	li	t0, 0x80000011	# CA, PLV0
+	li	t0, 0x80000011
 	csrwr	t0, LISA_CSR_DMWIN0
-	# 0x9000 xxxx xxxx xxxx
-	
+	// DMWIN0: 0x80000000-0x9fffffff->Direct Cached PLV0
 	li      t0, 0xaa000001
 	csrwr	t0, LISA_CSR_DMWIN1
-
+    // DMWIN1: 0xa0000000-0xbfffffff->Direct Uncached PLV0(Serial Port is here)
 	# Enable PG
 	li	t0, 0xb0	# PLV=0, IE=0, PG
 	csrwr	t0, LISA_CSR_CRMD

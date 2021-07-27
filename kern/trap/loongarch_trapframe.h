@@ -48,5 +48,6 @@ struct trapframe {
 #define EXCSUBCODE_SFC			0	/* TODO: ???? */
 #define EXCSUBCODE_HFC			1	/* TODO: ???? */
 #define EX_SE			25	/* TODO: ???? */
+#define EX_TLBR         0x3f
 
 #endif /* _LA32_TRAPFRAME_H_ */
