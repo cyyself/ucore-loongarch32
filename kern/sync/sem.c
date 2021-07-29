@@ -41,7 +41,7 @@ static __noinline uint32_t __down(semaphore_t *sem, uint32_t wait_state) {
     wait_current_set(&(sem->wait_queue), wait, wait_state);
     local_intr_restore(intr_flag);
 
-    //schedule(); TODO: 进程管理
+    schedule(); 
 
     local_intr_save(intr_flag);
     wait_current_del(&(sem->wait_queue), wait);

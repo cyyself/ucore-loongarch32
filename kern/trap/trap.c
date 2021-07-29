@@ -178,7 +178,7 @@ exit:
     if(in_kernel){
       panic("unhandled pgfault");
     }else{
-      // do_exit(-E_KILLED); TODO: 进程管理
+       do_exit(-E_KILLED); 
     }
   }
   return ;
@@ -206,7 +206,7 @@ trap_dispatch(struct trapframe *tf) {
         panic("hey man! Do NOT use that insn!");
       }
       panic("error");
-      //do_exit(-E_KILLED); TODO: 进程管理
+      do_exit(-E_KILLED); 
       break;
     case EX_IPE:
       print_trapframe(tf);
@@ -214,7 +214,7 @@ trap_dispatch(struct trapframe *tf) {
         panic("CpU exception should not occur in kernel mode!");
       }
       panic("error");
-      //do_exit(-E_KILLED); TODO: 进程管理
+      do_exit(-E_KILLED); 
       break;
     case EX_SYS:
       tf->tf_era += 4;
@@ -227,7 +227,7 @@ trap_dispatch(struct trapframe *tf) {
       }else{
         print_trapframe(tf);
         panic("error");
-        //do_exit(-E_KILLED);  TODO: 进程管理
+        do_exit(-E_KILLED);  
       }
       break;
     default:
@@ -242,10 +242,10 @@ loongarch_trap(struct trapframe *tf) {
   struct trapframe *tf2 = tf;
   // dispatch based on what type of trap occurred
   // used for previous projects
-  //if (current == NULL) {
+  if (current == NULL) {
     trap_dispatch(tf);
-  //}
-  /*
+  }
+  
   else {
     // keep a trapframe chain in stack
     struct trapframe *otf = current->tf;
@@ -258,12 +258,12 @@ loongarch_trap(struct trapframe *tf) {
     current->tf = otf;
     if (!in_kernel) {
       if (current->flags & PF_EXITING) {
-        // do_exit(-E_KILLED); TODO: 进程管理
+         do_exit(-E_KILLED); 
       }
       if (current->need_resched) {
         schedule();
       }
     }
   }
-  */
+  
 }

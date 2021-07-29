@@ -6,10 +6,9 @@
 #include <kdebug.h>
 #include <pmm.h>
 #include <vmm.h>
+#include <proc.h>
+#include <sched.h>
 
-void cpu_idle() {
-    while(1) asm volatile ("\tidle 0\n"::); // TODO: idle level
-}
 
 void setup_exception_vector()
 {
@@ -22,7 +21,6 @@ void __noreturn
 kern_init(void) {
     setup_exception_vector();
     
-    // TODO:
     tlb_invalidate_all();
 
     pic_init();                 // init interrupt controller
@@ -43,10 +41,10 @@ kern_init(void) {
     pmm_init();                 // init physical memory management
 
     vmm_init();                 // init virtual memory management
-    /*
+    
     sched_init();
     proc_init();                // init process table
-
+/*
     ide_init();
     fs_init();
 

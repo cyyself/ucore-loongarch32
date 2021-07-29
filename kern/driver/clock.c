@@ -18,7 +18,8 @@ static void reload_timer()
 int clock_int_handler(void * data)
 {
   ticks++;
-  if (ticks % 100 == 0) kprintf("100 ticks\n");
+  if (ticks % 100 == 0) 
+   //kprintf("100 ticks\n");
 //  if( (ticks & 0x1F) == 0)
 //    cons_putc('A');
   //run_timer_list();

@@ -34,8 +34,9 @@ struct context {
 	uint32_t sf_s6;
 	uint32_t sf_s7;
 	uint32_t sf_s8;
-	uint32_t sf_gp;
+	uint32_t sf_tp;
 	uint32_t sf_ra;
+  uint32_t sf_fp;
   uint32_t sf_sp;
 };
 
@@ -82,5 +83,23 @@ extern struct proc_struct *idleproc, *initproc, *current;
 
 #define le2proc(le, member)         \
   to_struct((le), struct proc_struct, member)
+  extern struct proc_struct *idleproc, *initproc, *current;
+
+  void proc_init(void);
+  void proc_run(struct proc_struct *proc);
+  int kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags);
+
+  char *set_proc_name(struct proc_struct *proc, const char *name);
+  char *get_proc_name(struct proc_struct *proc);
+  void cpu_idle(void) __attribute__((noreturn));
+
+  struct proc_struct *find_proc(int pid);
+  int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf);
+  int do_exit(int error_code);
+  int do_yield(void);
+  int do_execve(const char *name, int argc, const char **argv);
+  int do_wait(int pid, int *code_store);
+  int do_kill(int pid);
+  int do_sleep(unsigned int time);
 
 #endif /* !__KERN_PROCESS_PROC_H__ */

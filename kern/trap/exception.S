@@ -7,6 +7,8 @@
 
 .section .text
 .global ramExcHandle_general
+.global exception_return
+
 .type ramExcHandle_general, @function
 ramExcHandle_general:
     // Save t0 and t1
@@ -27,6 +29,8 @@ ramExcHandle_general:
     csrrd   t0, LISA_CSR_PRMD  
     andi    t0, t0, 3
     beq     t0, zero, 1f
+
+    
     /* Coming from user mode - load kernel stack into sp */
     /* TODO: add proc and uncomment here
     la      t0, current
@@ -44,6 +48,7 @@ ramExcHandle_general:
     //return KS2
     csrrd   t1, LISA_CSR_KS2
     b common_exception
+
 
 common_exception:
    /*
@@ -128,6 +133,9 @@ common_exception:
     la.abs  t0, loongarch_trap
     jirl    ra, t0, 0
     //bl loongarch_trap
+
+
+
 exception_return:
     // restore prmd
     ld.w    t0, sp, 24
@@ -171,4 +179,10 @@ exception_return:
     // restore sp
     ld.w    sp, sp, 36
     ertn
+
+    .end exception_return
     .end common_exception
+
+
+
+
