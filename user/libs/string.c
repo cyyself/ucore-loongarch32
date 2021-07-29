@@ -1,5 +1,5 @@
 #include <string.h>
-#include <thumips.h>
+#include <loongarch.h>
 
 /* *
  * strlen - calculate the length of the string @s, not including

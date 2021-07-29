@@ -1,5 +1,5 @@
 #include <defs.h>
-#include <thumips.h>
+#include <loongarch.h>
 #include <error.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,6 +39,7 @@ static const char * const error_string[MAXERROR + 1] = {
     [E_EXISTS]              "file or directory already exists",
     [E_NOTEMPTY]            "directory is not empty",
 };
+
 
 
 /* *
@@ -116,6 +117,7 @@ printnum(void (*putch)(int, void*, int), int fd, void *putdat,
 }
 
 
+
 /* *
  * vprintfmt - format a string and print it by using putch, it's called with a va_list
  * instead of a variable number of arguments
@@ -130,9 +132,9 @@ printnum(void (*putch)(int, void*, int), int fd, void *putdat,
  * */
 void
 vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt, va_list ap) {
-    const char *p;
-    int ch, err;
-    int num;
+    register const char *p;
+    register int ch, err;
+    unsigned long long num;
     int base, width, precision, lflag, altflag;
 
     while (1) {
@@ -240,9 +242,9 @@ vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt,
         // (signed) decimal
         case 'd':
             num = getint(&ap, lflag);
-            if (num < 0) {
+            if ((long long)num < 0) {
                 putch('-', putdat, fd);
-                num = -num;
+                num = -(long long)num;
             }
             base = 10;
             goto number;
@@ -250,7 +252,7 @@ vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt,
         case 'p':
             putch('0', putdat, fd);
             putch('x', putdat, fd);
-            num = (unsigned int)(uintptr_t)va_arg(ap, void *);
+            num = (unsigned long long)(uintptr_t)va_arg(ap, void *);
             base = 16;
             goto number;
 
@@ -285,7 +287,7 @@ vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt,
  * @fmt:        the format string to use
  * */
 void
-printfmt(void (*putch)(int, int*, int), int fd, void *putdat, const char *fmt, ...) {
+printfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt, ...) {
     va_list ap;
 
     va_start(ap, fmt);

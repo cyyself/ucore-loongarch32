@@ -1,5 +1,4 @@
-OUTPUT_FORMAT(elf32-tradlittlemips)
-OUTPUT_ARCH(mips:isa32)
+OUTPUT_ARCH(loongarch)
 ENTRY(_start)
 
 SECTIONS

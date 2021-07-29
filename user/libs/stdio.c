@@ -1,9 +1,7 @@
-#include <thumips.h>
-#include <stdio.h>
-#include <syscall.h>
-#include <file.h>
-#include <ulib.h>
+#include <defs.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <loongarch.h>
 
 /* HIGH level console I/O */
 

@@ -18,15 +18,14 @@ syscall(int num, ...) {
     va_end(ap);
 
     num += SYSCALL_BASE;
-
+    // TODO: loongarch syscall format
     asm volatile(
-      ".set noreorder;\n"
       "move $v0, %1;\n" /* syscall no. */
       "move $a0, %2;\n"
       "move $a1, %3;\n"
       "move $a2, %4;\n"
       "move $a3, %5;\n"
-      "syscall;\n"
+      "syscall 0;\n"
       "nop;\n"
       "move %0, $v0;\n"
       : "=r"(ret)
