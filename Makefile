@@ -27,7 +27,7 @@ HOSTCFLAGS	:= -g -Wall -O2
 GDB		:= $(HOME)/use_for_linux/loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -mfp32 -ggdb -gstabs -mlcsr
+CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
@@ -158,7 +158,7 @@ $(USER_LIB): $(BUILD_DIR) $(USER_LIB_OBJ)
 define make-user-app
 $1: $(BUILD_DIR) $(addsuffix .o,$1) $(USER_LIB)
 	@echo LINK $$@
-	$(LD) $(FPGA_LD_FLAGS) -T $(USER_LIB_SRCDIR)/user.ld  $(addsuffix .o,$1) --whole-archive $(USER_LIB) -o $$@
+	$(LD) -T $(USER_LIB_SRCDIR)/user.ld  $(addsuffix .o,$1) --whole-archive $(USER_LIB) -o $$@
 	$(SED) 's/$$$$FILE/$(notdir $1)/g' tools/piggy.S.in > $(USER_OBJDIR)/piggy.S
 	$(CC) -c $(USER_OBJDIR)/piggy.S -o $$@.piggy.o
 endef
