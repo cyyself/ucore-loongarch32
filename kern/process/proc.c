@@ -1046,6 +1046,9 @@ cpu_idle(void) {
         if (current->need_resched) {
             schedule();
         }
+        else {
+            asm volatile ("\tidle 0\n"::); // idle cpu to avoid qemu use 100% of single thread
+        }
     }
 }
 
