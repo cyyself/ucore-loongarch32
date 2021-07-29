@@ -367,8 +367,6 @@ memcmp(const void *v1, const void *v2, size_t n) {
     return 0;
 }
 
-//TODO: kmalloc
-/*
 char *
 strdup(const char *src) {
     char *dst;
@@ -391,4 +389,3 @@ stradd(const char *src1, const char *src2) {
     }
     return ret;
 }
-*/
