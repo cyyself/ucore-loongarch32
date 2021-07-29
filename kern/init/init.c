@@ -8,6 +8,8 @@
 #include <vmm.h>
 #include <proc.h>
 #include <sched.h>
+#include <ide.h>
+#include <fs.h>
 
 
 void setup_exception_vector()
@@ -42,11 +44,10 @@ kern_init(void) {
     
     sched_init();
     proc_init();                // init process table
-/*
+
     ide_init();
     fs_init();
-
-    */
+    
     intr_enable();              // enable irq interrupt
     cpu_idle();
 }
