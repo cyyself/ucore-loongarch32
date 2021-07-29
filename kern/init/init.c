@@ -28,12 +28,10 @@ kern_init(void) {
     
     cons_init();                // init the console
     clock_init();               // init clock interrupt
-    /*
 
     check_initrd();
-    */
+
     const char *message = "(THU.CST) os is loading ...\n\n";
-    //uart_prints(message);
     kprintf(message);
     
     print_kerninfo();
