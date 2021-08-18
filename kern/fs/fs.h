@@ -5,6 +5,7 @@
 #include <mmu.h>
 #include <sem.h>
 #include <atomic.h>
+#include <fs.h>
 
 #define SECTSIZE            512
 #define PAGE_NSECT          (PGSIZE / SECTSIZE)

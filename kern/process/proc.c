@@ -12,9 +12,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
-//#include <fs.h>
-//#include <vfs.h>
-//#include <sysfile.h>
+#include <fs.h>
+#include <vfs.h>
+#include <sysfile.h>
 #include <loongarch_trapframe.h>
 
 /* ------------- process/thread mechanism design&implementation -------------
@@ -261,10 +261,10 @@ kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags) {
     tf.tf_regs.reg_r[LOONGARCH_REG_V0] = 0;
     //TODO
     tf.tf_estat = read_csr_exst();
-   // tf.tf_estat &= ~ST0_KSU;
-   // tf.tf_estat |= ST0_IE;
-   // tf.tf_estat |= ST0_EXL;
-    //tf.tf_regs.reg_r[LOONGARCH_REG_TP] = __read_reg($2);
+//    tf.tf_estat &= ~ST0_KSU;
+ //   tf.tf_estat |= ST0_IE;
+  //  tf.tf_estat |= ST0_EXL;
+  //  tf.tf_regs.reg_r[LOONGARCH_REG_TP] = __read_reg($2);
     tf.tf_era = (uint32_t)kernel_thread_entry;      //TODO  
     return do_fork(clone_flags | CLONE_VM, 0, &tf);
 }
@@ -370,7 +370,7 @@ copy_thread(struct proc_struct *proc, uintptr_t esp, struct trapframe *tf) {
 
 //copy_fs&put_fs function used by do_fork in LAB8
 //TODO
-/*
+
 static int
 copy_fs(uint32_t clone_flags, struct proc_struct *proc) {
     struct fs_struct *fs_struct, *old_fs_struct = current->fs_struct;
@@ -410,7 +410,7 @@ put_fs(struct proc_struct *proc) {
         }
     }
 }
-*/
+
 // do_fork - parent process for a new child process
 //    1. call alloc_proc to allocate a proc_struct
 //    2. call setup_kstack to allocate a kernel stack for child process
@@ -439,10 +439,10 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     }
     //LAB8:EXERCISE2 2009010989 HINT:how to copy the fs in parent's proc_struct?
     //TODO
-    /*
+    
     if (copy_fs(clone_flags, proc) != 0) {
         goto bad_fork_cleanup_kstack;
-    } */
+    } 
     if (copy_mm(clone_flags, proc)){
         goto bad_fork_cleanup_fs;
     }
@@ -466,7 +466,7 @@ fork_out:
 
 bad_fork_cleanup_fs:
 //TODO
-    //put_fs(proc);
+    put_fs(proc);
 bad_fork_cleanup_kstack:
     put_kstack(proc);
 bad_fork_cleanup_proc:
@@ -498,7 +498,7 @@ do_exit(int error_code) {
         current->mm = NULL;
     }
     //TODO
-   // put_fs(current); //in LAB8
+    put_fs(current); //in LAB8
     current->state = PROC_ZOMBIE;
     current->exit_code = error_code;
 
@@ -536,7 +536,7 @@ do_exit(int error_code) {
 
 //load_icode_read is used by load_icode in LAB8
 //TODO
-/*
+
 static int
 load_icode_read(int fd, void *buf, size_t len, off_t offset) {
     int ret;
@@ -720,7 +720,7 @@ bad_pgdir_cleanup_mm:
 bad_mm:
     goto out;
 }
-*/
+
 // this function isn't very correct in LAB8
 static void
 put_kargv(int argc, char **kargv) {
@@ -790,15 +790,15 @@ do_execve(const char *name, int argc, const char **argv) {
     path = argv[0];
     unlock_mm(mm);
     //TODO
-  //  fs_closeall(current->fs_struct);
+    fs_closeall(current->fs_struct);
 
     /* sysfile_open will check the first argument path, thus we have to use a user-space pointer, and argv[0] may be incorrect */	
     int fd;
     //TODO
-    /*
+    
     if ((ret = fd = sysfile_open(path, O_RDONLY)) < 0) {
         goto execve_exit;
-    } */
+    } 
     if (mm != NULL) {
         lcr3(boot_cr3);
         if (mm_count_dec(mm) == 0) {
@@ -809,11 +809,11 @@ do_execve(const char *name, int argc, const char **argv) {
         current->mm = NULL;
     }
     //TODO
-    /*
+    
     ret= -E_NO_MEM;;
     if ((ret = load_icode(fd, argc, kargv)) != 0) {
         goto execve_exit;
-    }*/
+    }
     put_kargv(argc, kargv);
     set_proc_name(current, local_name);
     return 0;
@@ -965,11 +965,11 @@ static int
 init_main(void *arg) {
 	int ret;
     //TODO
-    /*
+    
     if ((ret = vfs_set_bootfs("disk0:")) != 0) {
         panic("set boot fs failed: %e.\n", ret);
     }
-	*/
+	
     size_t nr_free_pages_store = nr_free_pages();
     size_t slab_allocated_store = kallocated();
 
@@ -982,7 +982,7 @@ init_main(void *arg) {
         schedule();
     }
 //TODO
-   // fs_cleanup();
+    fs_cleanup();
     kprintf("all user-mode processes have quit.\n");
     assert(initproc->cptr == NULL && initproc->yptr == NULL && initproc->optr == NULL);
     assert(nr_process == 2);
@@ -1015,12 +1015,12 @@ proc_init(void) {
     idleproc->need_resched = 1;
 
 //TODO
-/*
+
     if ((idleproc->fs_struct = fs_create()) == NULL) {
       panic("create fs_struct (idleproc) failed.\n");
     }
     fs_count_inc(idleproc->fs_struct);
-*/
+
     set_proc_name(idleproc, "idle");
     nr_process ++;
 

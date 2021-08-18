@@ -2,7 +2,7 @@
 #include <asm/loongisa_csr.h>
 #include <memlayout.h>
 
-//.extern current
+.extern current
 .extern loongarch_trap
 
 .section .text
@@ -32,7 +32,7 @@ ramExcHandle_general:
 
     
     /* Coming from user mode - load kernel stack into sp */
-    /* TODO: add proc and uncomment here
+    /* TODO: add proc and uncomment here  */
     la      t0, current
     ld.w    t0, t0, 0
     ld.w    t0, t0, 12
@@ -41,7 +41,7 @@ ramExcHandle_general:
     add.w   sp, t0, t1
     csrrd   t1, LISA_CSR_KS2
     // addi.w  sp, t0, KSTACKSIZE
-    */
+  
 1:
     //saved EXST to t0 for save EXST to sp later(line 114) 
     csrrd   t0, LISA_CSR_EXST
