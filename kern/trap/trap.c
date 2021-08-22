@@ -218,8 +218,7 @@ trap_dispatch(struct trapframe *tf) {
       break;
     case EX_SYS:
       tf->tf_era += 4;
-      panic("unimpl syscall");
-      //syscall(); TODO: syscall
+      syscall();
       break;
     case EX_ADE:
       if(trap_in_kernel(tf)){

@@ -20,7 +20,7 @@ syscall(int num, ...) {
     num += SYSCALL_BASE;
     // TODO: loongarch syscall format
     asm volatile(
-      "move $v0, %1;\n" /* syscall no. */
+      "move $a7, %1;\n" /* syscall no. */
       "move $a0, %2;\n"
       "move $a1, %3;\n"
       "move $a2, %4;\n"
@@ -30,7 +30,7 @@ syscall(int num, ...) {
       "move %0, $v0;\n"
       : "=r"(ret)
       : "r"(num), "r"(arg[0]), "r"(arg[1]), "r"(arg[2]), "r"(arg[3]) 
-      : "a0", "a1", "a2", "a3", "v0"
+      : "a0", "a1", "a2", "a3", "a7" // no need to set v0, because v0 and a0 are the same register
     );
     return ret;
 }

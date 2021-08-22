@@ -979,6 +979,8 @@ static inline unsigned mask2size(unsigned mask) {
 	return 0;
 }
 
+#define read_csr_crmd()			__lcsr_csrrd(LISA_CSR_CRMD)
+#define write_csr_crmd(val)		__lcsr_csrwr(val, LISA_CSR_CRMD)
 #define read_csr_asid()			__lcsr_csrrd(LISA_CSR_ASID)
 #define write_csr_asid(val)		__lcsr_csrwr(val, LISA_CSR_ASID)
 #define read_csr_entrylo0()		__lcsr_csrrd(LISA_CSR_TLBELO0)

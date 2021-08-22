@@ -259,12 +259,11 @@ kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags) {
     tf.tf_regs.reg_r[LOONGARCH_REG_A0] = (uint32_t)arg;
     tf.tf_regs.reg_r[LOONGARCH_REG_A1] = (uint32_t)fn;
     tf.tf_regs.reg_r[LOONGARCH_REG_V0] = 0;
-    //TODO
-    tf.tf_estat = read_csr_exst();
-//    tf.tf_estat &= ~ST0_KSU;
- //   tf.tf_estat |= ST0_IE;
-  //  tf.tf_estat |= ST0_EXL;
-  //  tf.tf_regs.reg_r[LOONGARCH_REG_TP] = __read_reg($2);
+    tf.tf_prmd = read_csr_crmd();
+    tf.tf_prmd &= ~CSR_CRMD_PLV; // clear plv to set kernel mode (PLV=0)
+    tf.tf_estat |= CSR_CRMD_IE;
+    // no need exl for Loongarch32
+    // TODO: MIPS GP?
     tf.tf_era = (uint32_t)kernel_thread_entry;      //TODO  
     return do_fork(clone_flags | CLONE_VM, 0, &tf);
 }
@@ -923,17 +922,16 @@ kernel_execve(const char *name, const char **argv) {
     //panic("unimpl");
 
     asm volatile(
-      "addi.w   $r4, $r0,%1;\n" // syscall no.
-      "move $r4, %2;\n"
-      "move $r5, %3;\n"
-      "move $r6, %4;\n"
-      "move $r7, %5;\n"
+      "addi.w   $a7, $zero,%1;\n" // syscall no.
+      "move $a0, %2;\n"
+      "move $a1, %3;\n"
+      "move $a2, %4;\n"
+      "move $a3, %5;\n"
       "syscall  0;\n"
-    //  "nop;\n"
-      "move %0, $r4;\n"
+      "move %0, $v0;\n"
       : "=r"(ret)
       : "i"(SYSCALL_BASE+SYS_exec), "r"(name), "r"(argc), "r"(argv), "r"(argc) 
-      : "$r4", "$r5", "$r6", "$r7", "$r4"
+      : "a0", "a1", "a2", "a3", "a7" // no need to set v0, because v0 and a0 are the same register
     );
     return ret;
 }
