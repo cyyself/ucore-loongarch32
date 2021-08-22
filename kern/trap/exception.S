@@ -61,45 +61,45 @@ common_exception:
     */
    
    /*
-    * Allocate stack space for 34 words to hold the trap frame,
+    * Allocate stack space for 35 words to hold the trap frame,
     * plus four more words for a minimal argument block.
     */
     addi.w  sp, sp, -156
-    st.w    s7, sp, 148
-    st.w    s6, sp, 144
-    st.w    s5, sp, 140
-    st.w    s4, sp, 136
-    st.w    s3, sp, 132
-    st.w    s2, sp, 128
-    st.w    s1, sp, 124
-    st.w    s0, sp, 120
-    st.w    fp, sp, 116
-    st.w    t8, sp, 112
-    st.w    t7, sp, 108
-    st.w    t6, sp, 104
-    st.w    t5, sp, 100
-    st.w    t4, sp, 96
-    st.w    t3, sp, 92
-    st.w    t2, sp, 88
-    //st.w    t1, sp, 84
-    //st.w    t0, sp, 80
-    st.w    a7, sp, 76
-    st.w    a6, sp, 72
-    st.w    a5, sp, 68
-    st.w    a4, sp, 64
-    st.w    a3, sp, 60
-    st.w    a2, sp, 56
-    st.w    a1, sp, 52
-    st.w    a0, sp, 48
-    st.w    v1, sp, 44
-    st.w    v0, sp, 40
-    st.w    t1, sp, 36 // replace sp with real sp, now use t1 for free
+    st.w    s8, sp, 148
+    st.w    s7, sp, 144
+    st.w    s6, sp, 140
+    st.w    s5, sp, 136
+    st.w    s4, sp, 132
+    st.w    s3, sp, 128
+    st.w    s2, sp, 124
+    st.w    s1, sp, 120
+    st.w    s0, sp, 116
+    st.w    fp, sp, 112
+    st.w    reserved_reg, sp, 108
+    st.w    t8, sp, 104
+    st.w    t7, sp, 100
+    st.w    t6, sp, 96
+    st.w    t5, sp, 92
+    st.w    t4, sp, 88
+    st.w    t3, sp, 84
+    st.w    t2, sp, 80
+    //st.w    t1, sp, 76
+    //st.w    t0, sp, 72
+    st.w    a7, sp, 68
+    st.w    a6, sp, 64
+    st.w    a5, sp, 60
+    st.w    a4, sp, 56
+    st.w    a3, sp, 52
+    st.w    a2, sp, 48
+    st.w    a1, sp, 44
+    st.w    a0, sp, 40
+    st.w    t1, sp, 36  // replace sp with real sp, now use t1 for free
     st.w    tp, sp, 32
     // save real t0 and t1 after real sp (stored in t1 previously) stored
     csrrd   t1, LISA_CSR_KS1
-    st.w    t1, sp, 84
+    st.w    t1, sp, 76
     csrrd   t1, LISA_CSR_KS0
-    st.w    t1, sp, 80
+    st.w    t1, sp, 72
     
     // replace with real value
     // save tf_era after t0 and t1 saved
@@ -110,7 +110,7 @@ common_exception:
     * Save remaining exception context information.
     */
 
-    // save ra
+    // save ra (note: not in pushregs, it's tf_ra)
     st.w    ra, sp, 28
     // save prmd
     csrrd   t1, LISA_CSR_PRMD
@@ -148,34 +148,34 @@ exception_return:
     ld.w    ra, sp, 28
     ld.w    tp, sp, 32
     //ld.w    sp, sp, 36 (do it finally)
-    ld.w    v0, sp, 40
-    ld.w    v1, sp, 44
-    ld.w    a0, sp, 48
-    ld.w    a1, sp, 52
-    ld.w    a2, sp, 56
-    ld.w    a3, sp, 60
-    ld.w    a4, sp, 64
-    ld.w    a5, sp, 68
-    ld.w    a6, sp, 72
-    ld.w    a7, sp, 76
-    ld.w    t0, sp, 80
-    ld.w    t1, sp, 84
-    ld.w    t2, sp, 88
-    ld.w    t3, sp, 92
-    ld.w    t4, sp, 96
-    ld.w    t5, sp, 100
-    ld.w    t6, sp, 104
-    ld.w    t7, sp, 108
-    ld.w    t8, sp, 112
-    ld.w    fp, sp, 116
-    ld.w    s0, sp, 120
-    ld.w    s1, sp, 124
-    ld.w    s2, sp, 128
-    ld.w    s3, sp, 132
-    ld.w    s4, sp, 136
-    ld.w    s5, sp, 140
-    ld.w    s6, sp, 144
-    ld.w    s7, sp, 148
+    ld.w    a0, sp, 40
+    ld.w    a1, sp, 44
+    ld.w    a2, sp, 48
+    ld.w    a3, sp, 52
+    ld.w    a4, sp, 56
+    ld.w    a5, sp, 60
+    ld.w    a6, sp, 64
+    ld.w    a7, sp, 68
+    ld.w    t0, sp, 72
+    ld.w    t1, sp, 76
+    ld.w    t2, sp, 80
+    ld.w    t3, sp, 84
+    ld.w    t4, sp, 88
+    ld.w    t5, sp, 92
+    ld.w    t6, sp, 96
+    ld.w    t7, sp, 100
+    ld.w    t8, sp, 104
+    ld.w    reserved_reg, sp, 108
+    ld.w    fp, sp, 112
+    ld.w    s0, sp, 116
+    ld.w    s1, sp, 120
+    ld.w    s2, sp, 124
+    ld.w    s3, sp, 128
+    ld.w    s4, sp, 132
+    ld.w    s5, sp, 136
+    ld.w    s6, sp, 140
+    ld.w    s7, sp, 144
+    ld.w    s8, sp, 148
     // restore sp
     ld.w    sp, sp, 36
     ertn

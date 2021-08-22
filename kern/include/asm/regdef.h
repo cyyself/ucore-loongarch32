@@ -20,6 +20,7 @@
 #define v1	$r5
 #define a0	$r4	/* argument registers */
 #define a1	$r5
+// Note: a0,v0 and a1,v1 use the same register
 #define a2	$r6
 #define a3	$r7
 #define a4	$r8
@@ -35,7 +36,7 @@
 #define t6	$r18
 #define t7	$r19
 #define t8	$r20
-/* $r21: Temporarily reserved */
+#define reserved_reg	$r21	/* $r21: Temporarily reserved, dummy for tools/gen_savereg.py */
 #define fp	$r22	/* frame pointer */
 #define s0	$r23	/* callee saved */
 #define s1	$r24

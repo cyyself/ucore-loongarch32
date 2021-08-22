@@ -10,6 +10,6 @@
 .global forkrets
 .type forkrets, @function
 forkrets:
-  addi.w a0, sp, -16
+  addi.w sp, a0, -16
   b exception_return
 .end forkrets

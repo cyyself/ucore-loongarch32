@@ -144,6 +144,9 @@ qemu: $(OBJDIR)/ucore-kernel-initrd
 debug: $(OBJDIR)/ucore-kernel-initrd
 	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-initrd -S -s
 
+gdb: $(OBJDIR)/ucore-kernel-initrd
+	$(GDB) $(OBJDIR)/ucore-kernel-initrd
+
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPENDS)
 endif

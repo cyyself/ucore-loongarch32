@@ -9,11 +9,9 @@
 kernel_thread_entry:
     addi.w  sp, sp,  -16
     //goto kernel_thread
-    addi.w  t0, a1, 0
-  //  la.abs  t0, a1
-    jirl    ra, t0, 0
+    jirl    ra, a1, 0
    // bl a1
-    move    v0, a0
+    move    a0, v0
     //goto do_exit():see proc.c
     la.abs  t0, do_exit 
     jirl    ra, t0, 0
