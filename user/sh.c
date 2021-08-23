@@ -69,18 +69,20 @@ readline(const char *prompt) {
         if (c == 3) {
             return NULL;
         }
-        else if (c >= ' ' && i < BUFSIZE - 1) {
-            putc(c);
-            buffer[i ++] = c;
-        }
-        else if (c == '\b' && i > 0) {
-            putc(c);
-            i --;
+        else if ( (c == '\b' || c == 127)) {
+            if (i > 0) {
+                putc('\b');
+                i --;
+            }
         }
         else if (c == '\n' || c == '\r') {
             putc(c);
             buffer[i] = '\0';
             break;
+        }
+        else if (c >= ' ' && i < BUFSIZE - 1) {
+            putc(c);
+            buffer[i ++] = c;
         }
     }
     return buffer;
