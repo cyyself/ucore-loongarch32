@@ -205,7 +205,6 @@ trap_dispatch(struct trapframe *tf) {
       if(trap_in_kernel(tf)) {
         panic("hey man! Do NOT use that insn!");
       }
-      panic("error");
       do_exit(-E_KILLED); 
       break;
     case EX_IPE:
@@ -213,7 +212,6 @@ trap_dispatch(struct trapframe *tf) {
       if(trap_in_kernel(tf)) {
         panic("CpU exception should not occur in kernel mode!");
       }
-      panic("error");
       do_exit(-E_KILLED); 
       break;
     case EX_SYS:
@@ -226,7 +224,6 @@ trap_dispatch(struct trapframe *tf) {
         panic("Alignment Error");
       }else{
         print_trapframe(tf);
-        panic("error");
         do_exit(-E_KILLED);  
       }
       break;

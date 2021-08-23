@@ -258,7 +258,7 @@ kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags) {
     memset(&tf, 0, sizeof(struct trapframe));
     tf.tf_regs.reg_r[LOONGARCH_REG_A0] = (uint32_t)arg;
     tf.tf_regs.reg_r[LOONGARCH_REG_A1] = (uint32_t)fn;
-    tf.tf_regs.reg_r[LOONGARCH_REG_V0] = 0;
+    tf.tf_regs.reg_r[LOONGARCH_REG_A7] = 0; // use A7 as syscall result register
     tf.tf_prmd = read_csr_crmd();
     tf.tf_prmd &= ~CSR_CRMD_PLV; // clear plv to set kernel mode (PLV=0)
     tf.tf_estat |= CSR_CRMD_IE;
@@ -359,7 +359,7 @@ static void
 copy_thread(struct proc_struct *proc, uintptr_t esp, struct trapframe *tf) {
     proc->tf = (struct trapframe *)(proc->kstack + KSTACKSIZE) - 1;
     *(proc->tf) = *tf;
-    proc->tf->tf_regs.reg_r[LOONGARCH_REG_V0] = 0;
+    proc->tf->tf_regs.reg_r[LOONGARCH_REG_A7] = 0; // use A7 as syscall result register
     if(esp == 0) //a kernel thread
       esp = (uintptr_t)proc->tf - 32;
     proc->tf->tf_regs.reg_r[LOONGARCH_REG_SP] = esp;
@@ -927,10 +927,10 @@ kernel_execve(const char *name, const char **argv) {
       "move $a2, %4;\n"
       "move $a3, %5;\n"
       "syscall  0;\n"
-      "move %0, $v0;\n"
+      "move %0, $a7;\n"
       : "=r"(ret)
       : "i"(SYSCALL_BASE+SYS_exec), "r"(name), "r"(argc), "r"(argv), "r"(argc) 
-      : "a0", "a1", "a2", "a3", "a7" // no need to set v0, because v0 and a0 are the same register
+      : "a0", "a1", "a2", "a3", "a7"
     );
     return ret;
 }

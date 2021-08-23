@@ -25,10 +25,10 @@ syscall(int num, ...) {
       "move $a2, %4;\n"
       "move $a3, %5;\n"
       "syscall 0;\n"
-      "move %0, $v0;\n"
+      "move %0, $a7;\n"
       : "=r"(ret)
       : "r"(num), "r"(arg[0]), "r"(arg[1]), "r"(arg[2]), "r"(arg[3]) 
-      : "a0", "a1", "a2", "a3", "a7" // no need to set v0, because v0 and a0 are the same register
+      : "a0", "a1", "a2", "a3", "a7"
     );
     return ret;
 }

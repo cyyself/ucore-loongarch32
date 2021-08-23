@@ -198,7 +198,8 @@ syscall(void) {
       arg[1] = tf->tf_regs.reg_r[LOONGARCH_REG_A1];
       arg[2] = tf->tf_regs.reg_r[LOONGARCH_REG_A2];
       arg[3] = tf->tf_regs.reg_r[LOONGARCH_REG_A3];
-      tf->tf_regs.reg_r[LOONGARCH_REG_V0] = syscalls[num](arg);
+      tf->tf_regs.reg_r[LOONGARCH_REG_A7] = syscalls[num](arg);
+      // a0 and v0 are the same register in loongarch32, so continue to use v0 will cause arg[0] being coverd by return value when sys_exec
       return ;
     }
   }
