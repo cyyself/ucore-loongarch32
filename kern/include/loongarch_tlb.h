@@ -57,7 +57,6 @@ static inline uint32_t pte2tlblow(pte_t pte)
   t |= LOONGARCH_TLB_ENTRYL_V;
   /* always ignore ASID */
   t |= LOONGARCH_TLB_ENTRYL_G;
-  t |= (3<<3);
   if (ptep_u_read(&pte)) {
     t |= LOONGARCH_TLB_PLV3;
   }
