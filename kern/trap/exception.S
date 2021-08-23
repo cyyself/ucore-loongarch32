@@ -32,11 +32,11 @@ ramExcHandle_general:
 
     
     /* Coming from user mode - load kernel stack into sp */
-    la      t0, current
-    ld.w    t0, t0, 0
-    ld.w    t0, t0, 12
-    lu12i.w t1, 1
-    slli.w  t1, t1, 13 // KSTACKSIZE=8192
+    la      t0, current // current pointer
+    ld.w    t0, t0, 0 // proc struct
+    ld.w    t0, t0, 12 // kstack pointer
+    addi.w  t1, zero, 1
+    slli.w  t1, t1, 13 // KSTACKSIZE=8192=pow(2,13)
     add.w   sp, t0, t1
     csrrd   t1, LISA_CSR_KS2
   
