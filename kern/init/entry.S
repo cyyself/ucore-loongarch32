@@ -20,7 +20,6 @@ reset:
     jirl zero, t0, 0
 1:
     la sp, bootstacktop
-# TODO: Exception Vector
 #zero bss
     la t0, edata
     la t1, end
@@ -29,7 +28,6 @@ reset:
     addi.w t0, t0, 4
     slt t3, t0, t1
     bgtz t3, 2b
-# TODO: CSR Write
     addi.w sp, sp, -16
 	# Config direct window and set PG
 	li	t0, 0x80000011

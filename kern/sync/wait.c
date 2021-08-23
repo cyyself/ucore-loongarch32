@@ -83,7 +83,7 @@ wakeup_wait(wait_queue_t *queue, wait_t *wait, uint32_t wakeup_flags, bool del) 
         wait_queue_del(queue, wait);
     }
     wait->wakeup_flags = wakeup_flags;
-    // wakeup_proc(wait->proc); TODO: 进程
+    wakeup_proc(wait->proc);
 }
 
 void
