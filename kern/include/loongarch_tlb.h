@@ -25,6 +25,7 @@
 #define LOONGARCH_TLB_ENTRYL_D (1<<1)
 #define LOONGARCH_TLB_ENTRYL_G (1<<6)
 #define LOONGARCH_TLB_ENTRYH_VPPN_MASK (~0x1FFF)
+#define LOONGARCH_TLB_PLV3 (3<<2)
 
 static inline void write_one_tlb(int index, unsigned int hi, unsigned int low0, unsigned int low1)
 {
@@ -57,6 +58,9 @@ static inline uint32_t pte2tlblow(pte_t pte)
   /* always ignore ASID */
   t |= LOONGARCH_TLB_ENTRYL_G;
   t |= (3<<3);
+  if (ptep_u_read(&pte)) {
+    t |= LOONGARCH_TLB_PLV3;
+  }
   if(ptep_s_write(&pte))
     t |= LOONGARCH_TLB_ENTRYL_D;
   return t;

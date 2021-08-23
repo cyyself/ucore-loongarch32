@@ -47,15 +47,15 @@ print_trapframe(struct trapframe *tf) {
     print_regs(&tf->tf_regs);
     PRINT_HEX(" $ra\t: ", tf->tf_ra);
     PRINT_HEX(" BadVA\t: ", tf->tf_badv);
-    PRINT_HEX(" Status\t: ", tf->tf_estat);
+    PRINT_HEX(" Estat\t: ", tf->tf_estat);
     PRINT_HEX(" PRMD\t: ", tf->tf_prmd);
     PRINT_HEX(" EPC\t: ", tf->tf_era);
-    //if (!trap_in_kernel(tf)) {
-    //  kprintf("Trap in usermode: ");
-    //}else{
+    if (!trap_in_kernel(tf)) {
+      kprintf("Trap in usermode: ");
+    }else{
       kprintf("Trap in kernel: ");
-    //}
-    //kprintf(trapname(GET_CAUSE_EXCODE(tf->tf_cause))); // TODO
+    }
+    //kprintf(trapname(GET_CAUSE_EXCODE(tf->tf_estat)));
     kputchar('\n');
 }
 

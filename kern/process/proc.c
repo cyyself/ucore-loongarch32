@@ -698,8 +698,7 @@ load_icode(int fd, int argc, char **kargv) {
 
     tf->tf_era = elf->e_entry;
     tf->tf_regs.reg_r[LOONGARCH_REG_SP] = USTACKTOP;
-    uint32_t status = read_csr_crmd();
-    status &= ~CSR_CRMD_PLV; // clear plv
+    uint32_t status = 0;
     status |= PLV_USER; // set plv=3(User Mode)
     status |= CSR_CRMD_IE;
     tf->tf_prmd = status;
@@ -1045,7 +1044,7 @@ cpu_idle(void) {
             schedule();
         }
         else {
-            asm volatile ("\tidle 0\n"::); // idle cpu to avoid qemu use 100% of single thread
+            // asm volatile ("\tidle 0\n"::); // idle cpu to avoid qemu use 100% of single thread
         }
     }
 }

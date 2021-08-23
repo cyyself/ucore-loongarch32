@@ -97,9 +97,9 @@ void serial_int_handler(void *opaque)
     return ;
   //int c = serial_proc_data();
   int c = cons_getc();
-  kprintf("got input %c\n",c);
-  //extern void dev_stdin_write(char c);
-  //dev_stdin_write(c);
+  // kprintf("got input %c\n",c);
+  extern void dev_stdin_write(char c);
+  dev_stdin_write(c);
 }
 
 /* *
