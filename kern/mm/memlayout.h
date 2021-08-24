@@ -3,7 +3,7 @@
 
 /* This file contains the definitions for memory management in our OS. */
 
-#define KERNBASE            0x80000000
+#define KERNBASE            0xa0000000
 
 #define KMEMSIZE            (32 << 20)                 // 512M the maximum amount of physical memory
 

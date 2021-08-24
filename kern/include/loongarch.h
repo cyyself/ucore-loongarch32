@@ -77,7 +77,7 @@ outw(uint32_t port, uint32_t data) {
 
 
 /* board specification */
-#define COM1            0xbfe001e0
+#define COM1            0x9fe001e0
 #define COM1_IRQ        2
 #define COM1_BAUD_DDL   0x23
 

@@ -126,7 +126,7 @@ common_exception:
 
     // set trapframe as function argument
     addi.w  a0, sp, 16
-	li	t0, 0xb0	# PLV=0, IE=0, PG
+	li	t0, 0xb0	# PLV=0, IE=0, PG=1
 	csrwr	t0, LISA_CSR_CRMD
     la.abs  t0, loongarch_trap
     jirl    ra, t0, 0
