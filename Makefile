@@ -70,11 +70,15 @@ INCLUDES  := $(addprefix -I,$(SRC_DIR))
 INCLUDES  += -I$(SRCDIR)/include
 INCLUDES  += -I$(TOOLCHAIN)/lib/gcc/loongarch32-linux-gnu/8.3.0/include
 
+override ON_FPGA ?= n
 
-#USER_APPLIST:= sh ls cat
-#INITRD_BLOCK_CNT:=700 
-USER_APPLIST:= pwd cat sh ls forktest yield hello faultreadkernel faultread badarg waitkill pgdir exit sleep
-INITRD_BLOCK_CNT:=4000
+ifeq ($(ON_FPGA), y)
+	USER_APPLIST:= sh ls cat
+	INITRD_BLOCK_CNT:=700 
+else
+	USER_APPLIST:= pwd cat sh ls forktest yield hello faultreadkernel faultread badarg waitkill pgdir exit sleep
+	INITRD_BLOCK_CNT:=4000
+endif
 
 USER_SRCDIR := user
 USER_OBJDIR := $(OBJDIR)/$(USER_SRCDIR)
