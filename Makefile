@@ -10,7 +10,7 @@ GCCPREFIX:= $(TOOLCHAIN)/bin/loongarch32-linux-gnu-
 
 
 QEMU:= $(HOME)/use_for_linux/qemu-system-loongson32
-QEMUOPTS:= -M ls3a5k32 -monitor tcp::4288,server,nowait -serial stdio -m 256 -fsdev local,security_model=mapped,id=fsdev0,path=./ -device virtio-9p-pci,id=fs0,fsdev=fsdev0,mount_tag=hostshare,bus=ls7a.0 -nographic
+QEMUOPTS:= -M ls3a5k32 -monitor tcp::4288,server,nowait -serial stdio -m 256 -nographic
 # use the same qemu as use_for_linux
 
 TERMINAL := gnome-terminal
