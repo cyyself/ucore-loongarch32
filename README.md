@@ -77,7 +77,9 @@ telnet 127.0.0.1 4288
 
 ### 3. 存储空间管理
 
-在MIPS架构中，我们熟悉的固定地址空间`kseg0`和`kseg1`等被舍弃。在LoongArch32中，被改为了通过CSR中的DMW寄存器配置地址映射窗口。这一部分代码位于`kern/init/entry.S`。我们为了简单，DMW0配置为了MIPS的KSEG0相同的映射方式，也就是`0x80000000-0x9fffffff`直接映射到`0x00000000-0x1fffffff`。。而对于KSEG1，由于uCore除了读写串口外并无它用，而QEMU中的串口地址在较高的物理地址，因此配置了`0xa0000000-0xbfffffff`直接映射到`0xa0000000-0xbfffffff`。
+在MIPS架构中，我们熟悉的固定地址空间`kseg0`和`kseg1`等被舍弃。在LoongArch32中，被改为了通过CSR中的DMW寄存器配置地址映射窗口。这一部分代码位于`kern/init/entry.S`。考虑到以后可能需要在chiplab上使用PMON进行载入，因此我们按照了PMON相同的方式映射了一段内核的内存地址，也就是`0xa0000000-0xbfffffff`直接映射到`0x00000000-0x1fffffff`。而对于IO设备，以及载入用户进程需要进行的Uncached操作，配置了`0x80000000-0x9fffffff`直接映射到`0x00000000-0x1fffffff`。
+
+对MIPS了解的同学不难看出，我们采用的配置方式非常类似于MIPS的KSEG0与KSEG1，但是对地址进行了对调。
 
 ### 4. 通用寄存器
 
