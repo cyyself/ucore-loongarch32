@@ -45,7 +45,8 @@ serial_init(void) {
     outb(COM1 + COM_FCR, 0);
     // Set speed; requires DLAB latch
     outb(COM1 + COM_LCR, COM_LCR_DLAB);
-    outb(COM1 + COM_DLL, (uint8_t) (COM1_BAUD_DDL));
+    // outb(COM1 + COM_DLL, (uint8_t) (COM1_BAUD_DDL));
+    // don't change the baud rate set by pmon
     outb(COM1 + COM_DLM, 0);
 
     // 8 data bits, 1 stop bit, parity off; turn off DLAB latch
