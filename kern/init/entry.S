@@ -30,10 +30,10 @@ reset:
     bgtz t3, 2b
     addi.w sp, sp, -16
 	# Config direct window and set PG
-	li	t0, 0xa0000001
+	li	t0, 0xa0000011
 	csrwr	t0, LISA_CSR_DMWIN0
 	// DMWIN0: 0xa0000000-0xbfffffff->0x00000000-0x1fffffff Cached
-	li      t0, 0x80000011
+	li      t0, 0x80000001
 	csrwr	t0, LISA_CSR_DMWIN1
     // DMWIN1: 0x80000000-0x9fffffff->0x00000000-0x1fffffff Uncached (serial port is here)
 	# Enable PG
