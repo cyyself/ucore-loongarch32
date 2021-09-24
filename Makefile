@@ -5,11 +5,11 @@ SLASH	:= /
 V       := @
 
 
-TOOLCHAIN:=  $(HOME)/use_for_linux/install
-GCCPREFIX:= $(TOOLCHAIN)/bin/loongarch32-linux-gnu-
+TOOLCHAIN:= /opt/loongarch32-linux-gnu
+GCCPREFIX:= loongarch32-linux-gnu-
 
 
-QEMU:= $(HOME)/use_for_linux/qemu-system-loongson32
+QEMU:= qemu-system-loongson32
 QEMUOPTS:= -M ls3a5k32 -monitor tcp::4288,server,nowait -serial stdio -m 256 -nographic
 # use the same qemu as use_for_linux
 
@@ -24,7 +24,7 @@ TERMINALOPT := -e
 HOSTCC		:= gcc
 HOSTCFLAGS	:= -g -Wall -O2
 
-GDB		:= $(HOME)/use_for_linux/loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
+GDB		:= loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
 CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr
