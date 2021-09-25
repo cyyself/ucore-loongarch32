@@ -16,7 +16,7 @@ void setup_exception_vector()
 {
     extern unsigned char __exception_vector[];
     __lcsr_csrwr(__exception_vector + 0x4000, LISA_CSR_EBASE);
-    __lcsr_csrwr(__exception_vector + 0x4000, LISA_CSR_RFBASE);
+    __lcsr_csrwr(__exception_vector + 0x4000 - KERNBASE, LISA_CSR_RFBASE);
 }
 
 void __noreturn
