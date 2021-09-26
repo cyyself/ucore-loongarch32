@@ -93,3 +93,27 @@ typedef struct {
 
 #endif /* !__KERN_MM_MEMLAYOUT_H__ */
 
+/* *
+ * Virtual memory map:                                          Permissions
+ *                                                              kernel/user
+ *
+ *     4G ------------------> +---------------------------------+
+ *                            |                                 |
+ *                            |         Mapped(2G)              |
+ *                            |                                 |
+ *     KERNTOP  ------------> +---------------------------------+ 0xBFFF_FFFF
+ *                            |                                 | 
+ *                            |  Unmapped cached(DMW0 512M)     |
+ *                            |                                 | 
+ *     KERNBASE-------------> +---------------------------------+ 0xa0000000
+ *                            |                                 |
+ *                            |    Unmapped uncached(DMW1 512M) | RW/-- KMEMSIZE
+ *                            |                                 |
+ *                            +---------------------------------+ 0x80000000
+ *                            |                                 |
+ *                            |           User Mapped           |
+ *                            |                                 |
+ *                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 0x00000000
+ * 
+ *
+ * */
