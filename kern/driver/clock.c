@@ -17,11 +17,14 @@ static void reload_timer()
 
 int clock_int_handler(void * data)
 {
-  ticks++;
-  //if (ticks % 100 == 0) 
-   //kprintf("100 ticks\n");
-//  if( (ticks & 0x1F) == 0)
-//    cons_putc('A');
+
+#ifdef LAB1_EX4
+  // your code here
+  ticks ++;
+  if (ticks % 100 == 0) {
+    kprintf("100 ticks\n");
+  }
+#endif
   run_timer_list();
   reload_timer();
   return 0;
