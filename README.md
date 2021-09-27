@@ -93,8 +93,8 @@ LoongArch32中有一个比较特殊的地方，`v0`与`a0`，`v1`与`a1`寄存�
 
 ### Cache一致性
 
-因为做的时候并没有拿到Loongarch 32的FPGA软核，仅有QEMU，因此无法测试Cache一致性问题，因此暂时没有做写入指令后刷新数据Cache的指令。为了防止今后FPGA软核或者实际CPU上出现问题，目前进行了整体Uncached处理。
+因为做的时候并没有拿到Loongarch 32的FPGA软核，仅有QEMU，因此无法测试Cache一致性问题，因此暂时没有做写入指令后刷新数据Cache和指令Cache的操作。如果你拿到了这份代码需要在软核或实际硬件上运行，当发生错误时请修改DMW和TLB的Cache相关配置，全部改为Uncached，若是软核也可以自己魔改关闭Cache。
 
 ### 将环境打包Docker
 
-我们对LoongArch32所需环境进行了Docker打包，但目前尚不能提供公开，因此暂未实现。
+已经打包Docker，等到能够公开的时候进行公开。
