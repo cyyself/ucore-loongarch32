@@ -106,6 +106,7 @@ default_init(void) {
 
 static void
 default_init_memmap(struct Page *base, size_t n) {
+#ifdef LAB2_EX1
     assert(n > 0);
     struct Page *p = base;
     for (; p != base + n; p ++) {
@@ -117,10 +118,12 @@ default_init_memmap(struct Page *base, size_t n) {
     SetPageProperty(base);
     nr_free += n;
     list_add_before(&free_list, &(base->page_link));
+#endif
 }
 
 static struct Page *
 default_alloc_pages(size_t n) {
+#ifdef LAB2_EX1
     assert(n > 0);
     if (n > nr_free) {
         return NULL;
@@ -147,10 +150,12 @@ default_alloc_pages(size_t n) {
         ClearPageProperty(page);
     }
     return page;
+#endif
 }
 
 static void
 default_free_pages(struct Page *base, size_t n) {
+#ifdef LAB2_EX1
     assert(n > 0);
     struct Page *p = base;
     for (; p != base + n; p ++) {
@@ -188,6 +193,7 @@ default_free_pages(struct Page *base, size_t n) {
         le = list_next(le);
     }
     list_add_before(le, &(base->page_link));
+#endif
 }
 
 static size_t
