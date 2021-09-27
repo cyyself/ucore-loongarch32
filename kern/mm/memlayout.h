@@ -4,10 +4,12 @@
 /* This file contains the definitions for memory management in our OS. */
 
 #define KERNBASE            0xa0000000
+#define KERNBASE_UNCACHED   0x80000000
 
 #define KMEMSIZE            (32 << 20)                 // 512M the maximum amount of physical memory
 
 #define KERNTOP             (KERNBASE + KMEMSIZE)
+#define KERNTOP_UNCACHED    (KERNBASE_UNCACHED + KMEMSIZE)
 
 #define KSTACKPAGE          2                           // # of pages in kernel stack
 #define KSTACKSIZE          (KSTACKPAGE * 4096)       // sizeof kernel stack
@@ -23,7 +25,7 @@
 (USERBASE <= (start) && (start) < (end) && (end) <= USERTOP)
 
 #define KERN_ACCESS(start, end)                     \
-(KERNBASE <= (start) && (start) < (end) && (end) <= KERNTOP)
+((KERNBASE <= (start) && (start) < (end) && (end) <= KERNTOP) || (KERNBASE_UNCACHED <= (start) && (start) < (end) && (end) <= KERNTOP_UNCACHED))
 
 
 #ifndef __ASSEMBLER__

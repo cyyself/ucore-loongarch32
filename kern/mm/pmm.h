@@ -78,6 +78,11 @@ void print_pgdir(void);
             }                                                           \
             (void *) (__m_pa);                               \
         })
+/*
+    UNCACHE_ADDR:
+        convert 0xa0000000-0xbfffffff to 0x80000000-0x9fffffff
+*/
+#define UNCACHE_ADDR(pa) ((uintptr_t)(0x80000000u | ((uintptr_t)pa & 0x1fffffff)))
 
 extern struct Page *pages;
 extern size_t npage;
