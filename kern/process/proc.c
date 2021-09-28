@@ -792,14 +792,14 @@ load_icode(int fd, int argc, char **kargv) {
         current->cr3 = PADDR(mm->pgdir);
         lcr3(PADDR(mm->pgdir));
 #ifdef PIGGY
+        struct trapframe *tf = current->tf;
+        memset(tf, 0, sizeof(struct trapframe));
         tf->tf_era = elf->e_entry;
-        tf->tf_regs.reg_r[LOONGARCH_REG_SP] = stacktop;
+        tf->tf_regs.reg_r[LOONGARCH_REG_SP] = USTACKTOP;
         uint32_t status = 0;
         status |= PLV_USER; // set plv=3(User Mode)
         status |= CSR_CRMD_IE;
         tf->tf_prmd = status;
-        tf->tf_regs.reg_r[LOONGARCH_REG_A0] = argc;
-        tf->tf_regs.reg_r[LOONGARCH_REG_A1] = (uint32_t)uargv;
 #else
         //LAB5:EXERCISE1 2009010989
         // should set cs,ds,es,ss,esp,eip,eflags
@@ -1129,16 +1129,16 @@ static int kernel_execve(const char *name, const char **argv) {
 
 #ifdef PIGGY
     #define __KERNEL_EXECVE(name, binary, size) ({                          \
-                cprintf("kernel_execve: pid = %d, name = \"%s\".\n",        \
+                kprintf("kernel_execve: pid = %d, name = \"%s\".\n",        \
                         current->pid, name);                                \
                 kernel_execve(name, binary, (size_t)(size));                \
             })
 
     #define KERNEL_EXECVE(x) ({                                             \
-                extern unsigned char _binary_obj___user_##x##_out_start[],  \
-                    _binary_obj___user_##x##_out_size[];                    \
-                __KERNEL_EXECVE(#x, _binary_obj___user_##x##_out_start,     \
-                                _binary_obj___user_##x##_out_size);         \
+                extern unsigned char _binary_obj_user_##x##_start[],  \
+                    _binary_obj_user_##x##_end[];                    \
+                __KERNEL_EXECVE(#x, _binary_obj_user_##x##_start,     \
+                                _binary_obj_user_##x##_end-_binary_obj_user_##x##_start);         \
             })
 
     #define __KERNEL_EXECVE2(x, xstart, xsize) ({                           \
