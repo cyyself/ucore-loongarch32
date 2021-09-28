@@ -1,5 +1,5 @@
 #ifndef __KERN_SYNC_MONITOR_CONDVAR_H__
-#define __KERN_SYNC_MOINTOR_CONDVAR_H__
+#define __KERN_SYNC_MONITOR_CONDVAR_H__
 
 #include <sem.h>
 /* In [OS CONCEPT] 7.7 section, the accurate define and approximate implementation of MONITOR was introduced.

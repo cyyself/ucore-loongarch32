@@ -115,19 +115,19 @@ int philosopher_using_semaphore(void * arg) /* i：哲学家号码，从0到N-1 
 {
     int i, iter=0;
     i=(int)arg;
-    cprintf("I am No.%d philosopher_sema\n",i);
+    kprintf("I am No.%d philosopher_sema\n",i);
     while(iter++<TIMES)
     { /* 无限循环 */
-        cprintf("Iter %d, No.%d philosopher_sema is thinking\n",iter,i); /* 哲学家正在思考 */
+        kprintf("Iter %d, No.%d philosopher_sema is thinking\n",iter,i); /* 哲学家正在思考 */
         do_sleep(SLEEP_TIME);
         phi_take_forks_sema(i); 
         /* 需要两只叉子，或者阻塞 */
-        cprintf("Iter %d, No.%d philosopher_sema is eating\n",iter,i); /* 进餐 */
+        kprintf("Iter %d, No.%d philosopher_sema is eating\n",iter,i); /* 进餐 */
         do_sleep(SLEEP_TIME);
         phi_put_forks_sema(i); 
         /* 把两把叉子同时放回桌子 */
     }
-    cprintf("No.%d philosopher_sema quit\n",i);
+    kprintf("No.%d philosopher_sema quit\n",i);
     return 0;    
 }
 
@@ -172,9 +172,9 @@ monitor_t mt, *mtp=&mt;                          // monitor
 void phi_test_condvar (i) { 
     if(state_condvar[i]==HUNGRY&&state_condvar[LEFT]!=EATING
             &&state_condvar[RIGHT]!=EATING) {
-        cprintf("phi_test_condvar: state_condvar[%d] will eating\n",i);
+        kprintf("phi_test_condvar: state_condvar[%d] will eating\n",i);
         state_condvar[i] = EATING ;
-        cprintf("phi_test_condvar: signal self_cv[%d] \n",i);
+        kprintf("phi_test_condvar: signal self_cv[%d] \n",i);
         cond_signal(&mtp->cv[i]) ;
     }
 }
@@ -191,7 +191,7 @@ void phi_take_forks_condvar(int i) {
       // try to get fork
       phi_test_condvar(i); 
       if (state_condvar[i] != EATING) {
-          cprintf("phi_take_forks_condvar: %d didn't get fork and will wait\n",i);
+          kprintf("phi_take_forks_condvar: %d didn't get fork and will wait\n",i);
           cond_wait(&mtp->cv[i]);
       }
 //--------leave routine in monitor--------------
@@ -225,19 +225,19 @@ int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N
   
     int i, iter=0;
     i=(int)arg;
-    cprintf("I am No.%d philosopher_condvar\n",i);
+    kprintf("I am No.%d philosopher_condvar\n",i);
     while(iter++<TIMES)
     { /* iterate*/
-        cprintf("Iter %d, No.%d philosopher_condvar is thinking\n",iter,i); /* thinking*/
+        kprintf("Iter %d, No.%d philosopher_condvar is thinking\n",iter,i); /* thinking*/
         do_sleep(SLEEP_TIME);
         phi_take_forks_condvar(i); 
         /* need two forks, maybe blocked */
-        cprintf("Iter %d, No.%d philosopher_condvar is eating\n",iter,i); /* eating*/
+        kprintf("Iter %d, No.%d philosopher_condvar is eating\n",iter,i); /* eating*/
         do_sleep(SLEEP_TIME);
         phi_put_forks_condvar(i); 
         /* return two forks back*/
     }
-    cprintf("No.%d philosopher_condvar quit\n",i);
+    kprintf("No.%d philosopher_condvar quit\n",i);
     return 0;    
 }
 
