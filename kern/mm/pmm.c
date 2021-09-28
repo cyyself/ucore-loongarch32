@@ -615,11 +615,24 @@ copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end, bool share) {
           assert(page!=NULL);
           assert(npage!=NULL);
           int ret=0;
-          //LAB5:EXERCISE2 2009010989
-          //replicate content of page to npage, build the map of phy addr of nage with the linear addr start
+          /* LAB5:EXERCISE2 YOUR CODE
+         * replicate content of page to npage, build the map of phy addr of nage with the linear addr start
+         *
+         * Some Useful MACROs and DEFINEs, you can use them in below implementation.
+         * MACROs or Functions:
+         *    page2kva(struct Page *page): return the kernel vritual addr of memory which page managed (SEE pmm.h)
+         *    page_insert: build the map of phy addr of an Page with the linear addr la
+         *    memcpy: typical memory copy function
+         *
+         * (1) find src_kvaddr: the kernel virtual address of page
+         * (2) find dst_kvaddr: the kernel virtual address of npage
+         * (3) memory copy from src_kvaddr to dst_kvaddr, size is PGSIZE
+         * (4) build the map of phy addr of  nage with the linear addr start
+         */
+        #ifdef LAB5_EX2
           memcpy(page2kva(npage), page2kva(page), PGSIZE);
           page_insert(to, npage, start,perm);
-
+        #endif
           assert(ret == 0);
         }
         start += PGSIZE;

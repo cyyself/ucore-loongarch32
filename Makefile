@@ -27,7 +27,8 @@ HOSTCFLAGS	:= -g -Wall -O2
 GDB		:= loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr -DLAB1_EX4 -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3
+CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr 
+CFLAGS += -DLAB1_EX4 -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3 -DLAB4_EX1 -DLAB4_EX2 -DLAB5_EX1 -DLAB5_EX2 -DLAB6_EX2 -DLAB8_EX1 -DLAB8_EX2
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld

@@ -3,7 +3,7 @@
 
 #include <defs.h>
 #include <list.h>
-//#include <skew_heap.h>
+#include <skew_heap.h>
 
 struct proc_struct;
 
@@ -55,6 +55,8 @@ struct run_queue {
     list_entry_t run_list;
     unsigned int proc_num;
     int max_time_slice;
+    // For LAB6 ONLY
+    skew_heap_entry_t *lab6_run_pool;
 };
 
 void sched_init(void);

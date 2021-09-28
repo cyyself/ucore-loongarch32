@@ -5,6 +5,7 @@
 #include <list.h>
 #include <trap.h>
 #include <memlayout.h>
+#include <skew_heap.h>
 
 
 
@@ -68,6 +69,9 @@ struct proc_struct {
     list_entry_t run_link;                      // the entry linked in run queue
     int time_slice;                             // time slice for occupying the CPU
     struct fs_struct *fs_struct;                // the file related info(pwd, files_count, files_array, fs_semaphore) of process
+    skew_heap_entry_t lab6_run_pool;            // FOR LAB6 ONLY: the entry in the run pool
+    uint32_t lab6_stride;                       // FOR LAB6 ONLY: the current stride of the process 
+    uint32_t lab6_priority;                     // FOR LAB6 ONLY: the priority of process, set by lab6_set_priority(uint32_t)
 };
 
 extern struct proc_struct *idleproc, *initproc, *current;
