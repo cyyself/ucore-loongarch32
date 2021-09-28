@@ -31,6 +31,16 @@ sys_wait(uint32_t arg[]) {
     return do_wait(pid, store);
 }
 
+#ifdef PIGGY
+static int
+sys_exec(uint32_t arg[]) {
+    const char *name = (const char *)arg[0];
+    size_t len = (size_t)arg[1];
+    unsigned char *binary = (unsigned char *)arg[2];
+    size_t size = (size_t)arg[3];
+    return do_execve(name, len, binary, size);
+}
+#else
 static int
 sys_exec(uint32_t arg[]) {
     const char *name = (const char *)arg[0];
@@ -38,6 +48,7 @@ sys_exec(uint32_t arg[]) {
     const char **argv = (const char **)arg[2];
     return do_execve(name, argc, argv);
 }
+#endif
 
 static int
 sys_yield(uint32_t arg[]) {

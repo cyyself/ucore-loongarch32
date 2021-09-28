@@ -628,8 +628,13 @@ load_icode_read(int fd, void *buf, size_t len, off_t offset) {
 // 3. copy TEXT/DATA/BSS parts in binary to memory space of process
 // 4. call mm_map to setup user stack, and put parameters into user stack
 // 5. setup trapframe for user environment	
+#ifdef PIGGY
+static int
+load_icode(unsigned char *binary, size_t size) {
+#else
 static int
 load_icode(int fd, int argc, char **kargv) {
+#endif
     /* LAB8:EXERCISE2 YOUR CODE  HINT:how to load the file with handler fd  in to process's memory? how to setup argc/argv?
      * MACROs or Functions:
      *  mm_create        - create a mm
@@ -672,9 +677,13 @@ load_icode(int fd, int argc, char **kargv) {
 
         struct __elfhdr ___elfhdr__;
         struct elfhdr32 __elf, *elf = &__elf;
+#ifdef PIGGY
+        memcpy(&___elfhdr__,binary,sizeof(struct __elfhdr));
+#else
         if ((ret = load_icode_read(fd, &___elfhdr__, sizeof(struct __elfhdr), 0)) != 0) {
             goto bad_elf_cleanup_pgdir;
         }
+#endif
 
         _load_elfhdr((unsigned char*)&___elfhdr__, &__elf);
 
@@ -689,9 +698,13 @@ load_icode(int fd, int argc, char **kargv) {
         struct Page *page;
         for (phnum = 0; phnum < elf->e_phnum; phnum ++) {
         off_t phoff = elf->e_phoff + sizeof(struct proghdr) * phnum;
+#ifdef PIGGY
+        memcpy(ph,binary+phoff,sizeof(struct proghdr));
+#else
         if ((ret = load_icode_read(fd, ph, sizeof(struct proghdr), phoff)) != 0) {
             goto bad_cleanup_mmap;
         }
+#endif
         if (ph->p_type != ELF_PT_LOAD) {
             continue ;
         }
@@ -725,9 +738,13 @@ load_icode(int fd, int argc, char **kargv) {
             if (end < la) {
             size -= la - end;
             }
+#ifdef PIGGY
+            memcpy(UNCACHE_ADDR(page2kva(page) + off),binary + offset, size);
+#else
             if ((ret = load_icode_read(fd, UNCACHE_ADDR(page2kva(page) + off), size, offset)) != 0) {
             goto bad_cleanup_mmap;
             }
+#endif
             start += size, offset += size;
         }
 
@@ -759,7 +776,9 @@ load_icode(int fd, int argc, char **kargv) {
             start += size;
         }
         }
+#ifndef PIGGY
         sysfile_close(fd);
+#endif
 
         //mm->brk_start = mm->brk = ROUNDUP(mm->brk_start, PGSIZE);
 
@@ -772,7 +791,16 @@ load_icode(int fd, int argc, char **kargv) {
         current->mm = mm;
         current->cr3 = PADDR(mm->pgdir);
         lcr3(PADDR(mm->pgdir));
-
+#ifdef PIGGY
+        tf->tf_era = elf->e_entry;
+        tf->tf_regs.reg_r[LOONGARCH_REG_SP] = stacktop;
+        uint32_t status = 0;
+        status |= PLV_USER; // set plv=3(User Mode)
+        status |= CSR_CRMD_IE;
+        tf->tf_prmd = status;
+        tf->tf_regs.reg_r[LOONGARCH_REG_A0] = argc;
+        tf->tf_regs.reg_r[LOONGARCH_REG_A1] = (uint32_t)uargv;
+#else
         //LAB5:EXERCISE1 2009010989
         // should set cs,ds,es,ss,esp,eip,eflags
     #if 0
@@ -813,7 +841,8 @@ load_icode(int fd, int argc, char **kargv) {
             tf->tf_regs.reg_r[LOONGARCH_REG_A0] = argc;
             tf->tf_regs.reg_r[LOONGARCH_REG_A1] = (uint32_t)uargv;
         #endif
-        ret = 0;
+#endif
+    ret = 0;
     out:
         return ret;
     bad_cleanup_mmap:
@@ -864,6 +893,40 @@ failed_cleanup:
 
 // do_execve - call exit_mmap(mm)&pug_pgdir(mm) to reclaim memory space of current process
 //           - call load_icode to setup new memory space accroding binary prog.
+#ifdef PIGGY
+int
+do_execve(const char *name, size_t len, unsigned char *binary, size_t size) {
+    struct mm_struct *mm = current->mm;
+    // 检查name指针是否是指向用户空间
+    if (len > PROC_NAME_LEN) {
+        len = PROC_NAME_LEN;
+    }
+    // 若合法，copy到内核中
+    char local_name[PROC_NAME_LEN + 1];
+    memset(local_name, 0, sizeof(local_name));
+    memcpy(local_name, name, len);
+
+    if (mm != NULL) {
+        lcr3(boot_cr3);
+        if (mm_count_dec(mm) == 0) {
+            exit_mmap(mm);
+            put_pgdir(mm);
+            mm_destroy(mm);
+        }
+        current->mm = NULL;
+    }
+    int ret;
+    if ((ret = load_icode(binary, size)) != 0) {
+        goto execve_exit;
+    }
+    set_proc_name(current, local_name);
+    return 0;
+
+execve_exit:
+    do_exit(ret);
+    panic("already exit: %e.\n", ret);
+}
+#else
 int
 do_execve(const char *name, int argc, const char **argv) {
     static_assert(EXEC_MAX_ARG_LEN >= FS_MAX_FPATH_LEN);
@@ -930,6 +993,7 @@ execve_exit:
     do_exit(ret);
     panic("already exit: %e.\n", ret);
 }
+#endif
 
 // do_yield - ask the scheduler to reschedule
 int
@@ -1020,8 +1084,25 @@ do_kill(int pid) {
 }
 
 // kernel_execve - do SYS_exec syscall to exec a user program called by user_main kernel_thread
-static int
-kernel_execve(const char *name, const char **argv) {
+#ifdef PIGGY
+static int kernel_execve(const char *name, unsigned char *binary, size_t size) {
+    int ret, len = strlen(name);
+    asm volatile(
+      "addi.w   $a7, $zero,%1;\n" // syscall no.
+      "move $a0, %2;\n"
+      "move $a1, %3;\n"
+      "move $a2, %4;\n"
+      "move $a3, %5;\n"
+      "syscall  0;\n"
+      "move %0, $a7;\n"
+      : "=r"(ret)
+      : "i"(SYSCALL_BASE+SYS_exec), "r"(name), "r"(len), "r"(binary), "r"(size) 
+      : "a0", "a1", "a2", "a3", "a7"
+    );
+    return ret;
+}
+#else
+static int kernel_execve(const char *name, const char **argv) {
     int argc = 0, ret;
     while (argv[argc] != NULL) {
         argc ++;
@@ -1043,21 +1124,47 @@ kernel_execve(const char *name, const char **argv) {
     );
     return ret;
 }
+#endif
 
-#define __KERNEL_EXECVE(name, path, ...) ({                         \
-const char *argv[] = {path, ##__VA_ARGS__, NULL};       \
-					 kprintf("kernel_execve: pid = %d, name = \"%s\".\n",    \
-							 current->pid, name);                            \
-					 kernel_execve(name, argv);                              \
-})
 
-#define KERNEL_EXECVE(x, ...)                   __KERNEL_EXECVE(#x, #x, ##__VA_ARGS__)
+#ifdef PIGGY
+    #define __KERNEL_EXECVE(name, binary, size) ({                          \
+                cprintf("kernel_execve: pid = %d, name = \"%s\".\n",        \
+                        current->pid, name);                                \
+                kernel_execve(name, binary, (size_t)(size));                \
+            })
 
-#define KERNEL_EXECVE2(x, ...)                  KERNEL_EXECVE(x, ##__VA_ARGS__)
+    #define KERNEL_EXECVE(x) ({                                             \
+                extern unsigned char _binary_obj___user_##x##_out_start[],  \
+                    _binary_obj___user_##x##_out_size[];                    \
+                __KERNEL_EXECVE(#x, _binary_obj___user_##x##_out_start,     \
+                                _binary_obj___user_##x##_out_size);         \
+            })
 
-#define __KERNEL_EXECVE3(x, s, ...)             KERNEL_EXECVE(x, #s, ##__VA_ARGS__)
+    #define __KERNEL_EXECVE2(x, xstart, xsize) ({                           \
+                extern unsigned char xstart[], xsize[];                     \
+                __KERNEL_EXECVE(#x, xstart, (size_t)xsize);                 \
+            })
 
-#define KERNEL_EXECVE3(x, s, ...)               __KERNEL_EXECVE3(x, s, ##__VA_ARGS__)
+    #define KERNEL_EXECVE2(x, xstart, xsize)        __KERNEL_EXECVE2(x, xstart, xsize)
+#else
+    #define __KERNEL_EXECVE(name, path, ...) ({                         \
+    const char *argv[] = {path, ##__VA_ARGS__, NULL};       \
+                        kprintf("kernel_execve: pid = %d, name = \"%s\".\n",    \
+                                current->pid, name);                            \
+                        kernel_execve(name, argv);                              \
+    })
+
+    #define KERNEL_EXECVE(x, ...)                   __KERNEL_EXECVE(#x, #x, ##__VA_ARGS__)
+
+    #define KERNEL_EXECVE2(x, ...)                  KERNEL_EXECVE(x, ##__VA_ARGS__)
+
+    #define __KERNEL_EXECVE3(x, s, ...)             KERNEL_EXECVE(x, #s, ##__VA_ARGS__)
+
+    #define KERNEL_EXECVE3(x, s, ...)               __KERNEL_EXECVE3(x, s, ##__VA_ARGS__)
+#endif
+
+
 
 // user_main - kernel thread used to exec a user program
 static int

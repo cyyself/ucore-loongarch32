@@ -28,7 +28,7 @@ GDB		:= loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
 CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr 
-CFLAGS += -DLAB1_EX4 -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3 -DLAB4_EX1 -DLAB4_EX2 -DLAB5_EX1 -DLAB5_EX2 -DLAB6_EX2 -DLAB8_EX1 -DLAB8_EX2
+CFLAGS += -DLAB1_EX4 -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3 -DLAB4_EX1 -DLAB4_EX2 -DLAB5_EX1 -DLAB5_EX2 -DLAB6_EX2 -DLAB8_EX1 -DLAB8_EX2 -DPIGGY
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
@@ -118,6 +118,7 @@ obj/ucore-kernel-piggy: $(BUILD_DIR)  $(OBJ) $(USER_APP_BINS) tools/kernel.ld
 	@echo LINK $@
 	$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
 					$(addsuffix .piggy.o, $(USER_APP_BINS)) -o $@
+	$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
 
 $(DEPDIR)/%.d: $(SRCDIR)/%.c
 	@echo DEP $<
@@ -201,4 +202,5 @@ $(OBJDIR)/ucore-kernel-initrd:  $(BUILD_DIR) $(TOOL_MKSFS) $(OBJ) $(USER_APP_BIN
 	$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
 				 $(USER_OBJDIR)/initrd.img.o -o $@
 	$(OBJDUMP) -S $@ > $(OBJDIR)/kernel.asm
+	$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
 	rm -rf $(ROOTFS_DIR)

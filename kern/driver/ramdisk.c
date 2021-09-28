@@ -29,6 +29,9 @@
 //char initrd_begin[], initrd_end[];
 
 bool check_initrd(){
+#ifdef PIGGY
+  return 1;
+#else
   if(_initrd_begin == _initrd_end){
     kprintf("Warning: No Initrd!\n");
     return 0;
@@ -38,6 +41,7 @@ bool check_initrd(){
       *(uint8_t*)(_initrd_begin+3), *(uint8_t*)(_initrd_begin+2), 
       *(uint8_t*)(_initrd_begin+1), *(uint8_t*)_initrd_begin);
   return 1;
+#endif
 }
 
 
@@ -70,6 +74,7 @@ void ramdisk_init_struct(struct ide_device* dev)
 {
   memset(dev, 0, sizeof(struct ide_device));
   assert(INITRD_SIZE()%SECTSIZE == 0);
+#ifndef PIGGY
   if(CHECK_INITRD_EXIST()){
     dev->valid = 1;
     dev->sets = ~0;
@@ -80,5 +85,6 @@ void ramdisk_init_struct(struct ide_device* dev)
     dev->read_secs = ramdisk_read;
     dev->write_secs = ramdisk_write;
   }
+#endif
 }
 

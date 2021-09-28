@@ -20,12 +20,18 @@
 #include <ide.h>
 
 /* defined in ldscript */
-extern char _initrd_begin[], _initrd_end[];
+#ifdef PIGGY
+    #define CHECK_INITRD_EXIST() (0)
+    #define INITRD_SIZE() (0)
+#else
+    extern char _initrd_begin[], _initrd_end[];
 
-bool check_initrd();
+    bool check_initrd();
 
-#define CHECK_INITRD_EXIST() (_initrd_end != _initrd_begin)
-#define INITRD_SIZE() (_initrd_end - _initrd_begin)
+    #define CHECK_INITRD_EXIST() (_initrd_end != _initrd_begin)
+    #define INITRD_SIZE() (_initrd_end - _initrd_begin)
 
-void ramdisk_init_struct(struct ide_device* dev);
+    void ramdisk_init_struct(struct ide_device* dev);
+#endif
+
 

@@ -101,7 +101,11 @@ extern struct proc_struct *idleproc, *initproc, *current;
   int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf);
   int do_exit(int error_code);
   int do_yield(void);
+#ifdef PIGGY
+  int do_execve(const char *name, size_t len, unsigned char *binary, size_t size);
+#else
   int do_execve(const char *name, int argc, const char **argv);
+#endif
   int do_wait(int pid, int *code_store);
   int do_kill(int pid);
   int do_sleep(unsigned int time);
