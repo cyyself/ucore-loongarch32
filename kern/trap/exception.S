@@ -6,11 +6,11 @@
 .extern loongarch_trap
 
 .section .text
-.global ramExcHandle_general
+.global exception_handler
 .global exception_return
 
-.type ramExcHandle_general, @function
-ramExcHandle_general:
+.type exception_handler, @function
+exception_handler:
     // Save t0 and t1
 	csrwr   t0, LISA_CSR_KS0
     csrwr   t1, LISA_CSR_KS1
