@@ -7,7 +7,6 @@
 #include <error.h>
 #include <kmalloc.h>
 #include <pmm.h>
-#include <loongarch_tlb.h>
 
 /* 
    vmm design include two parts: mm_struct (mm) & vma_struct (vma)

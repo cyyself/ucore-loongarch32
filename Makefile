@@ -28,7 +28,16 @@ GDB		:= loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
 CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr 
-CFLAGS += -DLAB1_EX4 -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3 -DLAB4_EX1 -DLAB4_EX2 -DLAB5_EX1 -DLAB5_EX2 -DLAB6_EX2 -DLAB8_EX1 -DLAB8_EX2 #-DPIGGY
+LAB1	:= -DLAB1_EX4
+LAB2	:= -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3
+LAB3	:= -DLAB3_EX1 -DLAB3_EX2
+LAB4	:= -DLAB4_EX1 -DLAB4_EX2
+LAB5	:= -DLAB5_EX1 -DLAB5_EX2
+LAB6	:= -DLAB6_EX2
+LAB7	:=
+LAB8	:= -DLAB8_EX1 -DLAB8_EX2
+LAB_FLA	:= $(LAB1) $(LAB2) $(LAB3) $(LAB4) $(LAB5) $(LAB6) $(LAB7) $(LAB8)
+CFLAGS 	+= $(LAB_FLA)	#-DPIGGY
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld

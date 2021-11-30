@@ -27,35 +27,8 @@ static inline void tlb_replace_random(unsigned int hi, unsigned int low0, unsign
     __asm__ __volatile__("tlbfill");
 }
 
+void tlb_refill(uint32_t badaddr, pte_t *pte);
 
-
-#define PTE2TLBLOW(x) (((((uint32_t)(*(x))-KERNBASE)>> 12)<<8)|LOONGARCH_TLB_ENTRYL_V|LOONGARCH_TLB_ENTRYL_D|(3<<2)|(1<<4))
-// PLV=3 MAT=1
-
-static inline uint32_t pte2tlblow(pte_t pte)
-{
-  uint32_t t = (((uint32_t)pte - KERNBASE ) >> 12)<<8;
-  if(!ptep_present(&pte))
-    return 0;
-  t |= LOONGARCH_TLB_ENTRYL_V;
-  /* always ignore ASID */
-  t |= LOONGARCH_TLB_ENTRYL_G;
-  if (ptep_u_read(&pte)) {
-    t |= LOONGARCH_TLB_PLV3;
-  }
-  if(ptep_s_write(&pte))
-    t |= LOONGARCH_TLB_ENTRYL_D;
-  return t;
-}
-
-static inline void tlb_refill(uint32_t badaddr, pte_t *pte)
-{
-  if(!pte)
-    return ;
-  if(badaddr & (1<<12))
-    pte--;
-  tlb_replace_random(badaddr & LOONGARCH_TLB_ENTRYH_VPPN_MASK, 
-      pte2tlblow(*pte), pte2tlblow(*(pte+1)));
-}
+uint32_t pte2tlblow(pte_t pte);
 
 #endif

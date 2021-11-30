@@ -151,7 +151,6 @@ static void handle_tlbmiss(struct trapframe* tf, int write)
     /* check permission */
     if(in_kernel){
       tlb_refill(badaddr, pte); 
-    //kprintf("## refill K\n");
       return;
     }else{
       if (write != 2) {
@@ -164,7 +163,6 @@ static void handle_tlbmiss(struct trapframe* tf, int write)
           goto exit;
         }
       }
-    //kprintf("## refill U %d %08x\n", write, badaddr);
       tlb_refill(badaddr, pte);
       return ;
     }
