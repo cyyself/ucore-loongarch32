@@ -1,20 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  loongarch_tlb.h
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  27/07/2021 3:41:53 PM
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Yangyu Chen, cyyself@cqu.edu.cn
- *   Organization:  Chongqing University
- *
- * =====================================================================================
- */
 #ifndef _LOONGARCH_TLB_H
 #define _LOONGARCH_TLB_H
 
