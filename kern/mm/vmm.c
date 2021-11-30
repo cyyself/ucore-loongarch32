@@ -38,7 +38,6 @@ static void check_vmm(void);
 static void check_vma_struct(void);
 static void check_pgfault(void);
 
-int swap_init_ok = 0;
 // mm_create -  alloc a mm_struct & initialize it.
 struct mm_struct *
 mm_create(void) {
@@ -416,14 +415,7 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
     }
   }
   else { // if this pte is a swap entry, then load data from disk to a page with phy addr, 
-    // map the phy addr with logical addr, trig swap manager to record the access situation of this page
-    if(swap_init_ok) {
-      panic("No swap!! never reach!!"); 
-    }
-    else {
-      kprintf("no swap_init_ok but ptep is %x, failed\n",*ptep);
-      goto failed;
-    }
+      kprintf("no swap in ucore-la32 but ptep is %x, failed\n",*ptep);
   }
   /* refill TLB for mips, no second exception */
   //tlb_refill(addr, ptep);

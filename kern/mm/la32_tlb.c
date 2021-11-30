@@ -21,7 +21,6 @@ uint32_t pte2tlblow(pte_t pte)
   if(!ptep_present(&pte))
     return 0;
   t |= LOONGARCH_TLB_ENTRYL_V;
-  /* always ignore ASID */
   t |= LOONGARCH_TLB_ENTRYL_G;
   if (ptep_u_read(&pte)) {
     t |= LOONGARCH_TLB_PLV3;
@@ -31,12 +30,13 @@ uint32_t pte2tlblow(pte_t pte)
   return t;
 #else
 /*
-  LAB3 YOUR CODE HERE!
+  LAB3 EXERCISE1: YOUR CODE
   
-  1. Read LoongArch32 document to know each bit of EntryLo means. But we can fill ASID with zero and flush TLB during context switch.
-  2. Call 'ptep_present' to check the pte exist
-  3. Call 'ptep_u_read' and 'ptep_u_write' to set PLV3 bit and D bit respectively.
-  4. return TLB EntryLo value.
+  1. Read LoongArch32 document to know the meaning of each bit in TLBELO.
+  2. Find PPN from pte and fill the TLBELO[31:8]
+  3. Call 'ptep_present' to check the pte exist
+  4. Call 'ptep_u_read' and 'ptep_u_write' to set PLV3 bit and D bit respectively.
+  5. return TLB EntryLo value.
 */
 #endif
 }
@@ -52,12 +52,12 @@ void tlb_refill(uint32_t badaddr, pte_t *pte)
       pte2tlblow(*pte), pte2tlblow(*(pte+1)));
 #else
 /*
-  LAB3 YOUR CODE HERE!
+  LAB3 EXERCISE1: YOUR CODE
 
   1. Check if pte is null pointer
   2. Check if badaddr[12] is 1, if is, we should set pte=pte-1
-  3. get EntryLo0 and EntryLo1 from 'pte2tlblow' function.
-  3. Call tlb_replace_random. Fill EntryHi will badaddr and clear lowest 13 bit.
+  3. get TLBELO0 and TLBELO1 from 'pte2tlblow' function.
+  3. Call tlb_replace_random. Fill TLBEHI will badaddr and clear lowest 13 bit.
 
 */
 #endif
