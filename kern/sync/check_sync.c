@@ -182,6 +182,7 @@ void phi_test_condvar (i) {
 
 void phi_take_forks_condvar(int i) {
      down(&(mtp->mutex));
+#ifdef LAB7_EX1
 //--------into routine in monitor--------------
      // LAB7 EXERCISE1: YOUR CODE
      // I am hungry
@@ -195,6 +196,7 @@ void phi_take_forks_condvar(int i) {
           cond_wait(&mtp->cv[i]);
       }
 //--------leave routine in monitor--------------
+#endif
       if(mtp->next_count>0)
          up(&(mtp->next));
       else
@@ -203,7 +205,7 @@ void phi_take_forks_condvar(int i) {
 
 void phi_put_forks_condvar(int i) {
      down(&(mtp->mutex));
-
+#ifdef LAB7_EX1
 //--------into routine in monitor--------------
      // LAB7 EXERCISE1: YOUR CODE
      // I ate over
@@ -214,6 +216,7 @@ void phi_put_forks_condvar(int i) {
       phi_test_condvar(LEFT);
       phi_test_condvar(RIGHT);
 //--------leave routine in monitor--------------
+#endif
      if(mtp->next_count>0)
         up(&(mtp->next));
      else
@@ -242,7 +245,7 @@ int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N
 }
 
 void check_sync(void){
-
+#ifdef LAB7_EX1
     int i;
 
     //check semaphore
@@ -268,4 +271,5 @@ void check_sync(void){
         philosopher_proc_condvar[i] = find_proc(pid);
         set_proc_name(philosopher_proc_condvar[i], "philosopher_condvar_proc");
     }
+#endif
 }

@@ -97,8 +97,8 @@ void serial_int_handler(void *opaque)
   if(id & 0x01)
     return ;
   //int c = serial_proc_data();
-#ifdef LAB1_EX4
   int c = cons_getc();
+#ifdef LAB1_EX4
   kprintf("got input %c\n",c);
 #endif
   extern void dev_stdin_write(char c);
