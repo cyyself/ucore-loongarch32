@@ -1250,7 +1250,7 @@ init_main(void *arg) {
     if (pid <= 0) {
         panic("create user_main failed.\n");
     }
-#ifdef LAB8_EX2
+#ifdef _SHOW_PHI
     extern void check_sync(void);
     check_sync();                // check philosopher sync problem
 #endif
@@ -1266,7 +1266,7 @@ init_main(void *arg) {
     assert(nr_process == 2);
     assert(list_next(&proc_list) == &(initproc->list_link));
     assert(list_prev(&proc_list) == &(initproc->list_link));
-#ifndef LAB8_EX2
+#ifndef _SHOW_PHI
     assert(nr_free_pages_store == nr_free_pages());
     assert(slab_allocated_store == kallocated());
 #endif

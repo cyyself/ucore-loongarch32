@@ -18,8 +18,8 @@ static void reload_timer()
 int clock_int_handler(void * data)
 {
 
-#ifdef LAB1_EX4
-  // your code here
+#if defined(LAB1_EX4) && defined(_SHOW_100_TICKS)
+  // LAB1 EXERCISE4: YOUR CODE
   ticks ++;
   if (ticks % 100 == 0) {
     kprintf("100 ticks\n");
@@ -35,9 +35,9 @@ clock_init(void) {
   // setup timer
   unsigned long timer_config;
   unsigned long period = 200000000;
-	period = period / HZ;
-	timer_config = period & LISA_CSR_TMCFG_TIMEVAL;
-	timer_config |= (LISA_CSR_TMCFG_PERIOD | LISA_CSR_TMCFG_EN);
+  period = period / HZ;
+  timer_config = period & LISA_CSR_TMCFG_TIMEVAL;
+  timer_config |= (LISA_CSR_TMCFG_PERIOD | LISA_CSR_TMCFG_EN);
   __lcsr_csrwr(timer_config, LISA_CSR_TMCFG);
   pic_enable(TIMER0_IRQ);
   kprintf("++setup timer interrupts\n");

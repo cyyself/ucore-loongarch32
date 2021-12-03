@@ -458,7 +458,7 @@ check_boot_pgdir(void) {
   assert(page_ref(p) == 2);
 
   //kprintf("\nHERE\n");
-
+#ifdef LAB3_EX1
   assert(*(int*)0x100 == 0x1234);
   const char *str = "ucore: Hello world!!";
   strcpy((void *)0x100, str);
@@ -466,7 +466,7 @@ check_boot_pgdir(void) {
 
   *(char *)(page2kva(p) + 0x100) = '\0';
   assert(strlen((const char *)0x100) == 0);
-
+#endif
   free_page(p);
   free_page(pa2page(PDE_ADDR(boot_pgdir[0])));
   boot_pgdir[0] = 0;

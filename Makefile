@@ -1,3 +1,13 @@
+LAB1	:= -DLAB1_EX4 #-D_SHOW_100_TICKS -D_SHOW_SERIAL_INPUT
+LAB2	:= -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3
+LAB3	:= -DLAB3_EX1 -DLAB3_EX2
+LAB4	:= -DLAB4_EX1 -DLAB4_EX2
+LAB5	:= -DLAB5_EX1 -DLAB5_EX2
+LAB6	:= -DLAB6_EX2
+LAB7	:= -DLAB7_EX1 #-D_SHOW_PHI
+LAB8	:= -DLAB8_EX1 -DLAB8_EX2
+USER_OBJ_MODE	:= initrd
+
 EMPTY	:=
 SPACE	:= $(EMPTY) $(EMPTY)
 SLASH	:= /
@@ -27,17 +37,8 @@ HOSTCFLAGS	:= -g -Wall -O2
 GDB		:= loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
 
 CC :=$(GCCPREFIX)gcc
-CFLAGS	:= -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr 
-LAB1	:= -DLAB1_EX4
-LAB2	:= -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3
-LAB3	:= -DLAB3_EX1 -DLAB3_EX2
-LAB4	:= -DLAB4_EX1 -DLAB4_EX2
-LAB5	:= -DLAB5_EX1 -DLAB5_EX2
-LAB6	:= -DLAB6_EX2
-LAB7	:= -DLAB7_EX1
-LAB8	:= -DLAB8_EX1 -DLAB8_EX2
 LAB_FLA	:= $(LAB1) $(LAB2) $(LAB3) $(LAB4) $(LAB5) $(LAB6) $(LAB7) $(LAB8)
-CFLAGS 	+= $(LAB_FLA)	#-DPIGGY
+CFLAGS	:= $(LAB_FLA) -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr 
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
@@ -115,7 +116,7 @@ MAKEDEPEND = $(CLANG) -M $(CFLAGS) $(INCLUDES) -o $(DEPDIR)/$*.d $<
 
 .PHONY: all checkdirs clean qemu debug
 
-all: checkdirs $(OBJDIR)/ucore-kernel-initrd
+all: checkdirs $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
 
 $(shell mkdir -p $(DEP_DIR))
 
@@ -123,7 +124,7 @@ $(OBJDIR)/ucore-kernel:  checkdirs $(OBJ) tools/kernel.ld
 	@echo LINK $@
 	$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) -o $@
 
-obj/ucore-kernel-piggy: $(BUILD_DIR)  $(OBJ) $(USER_APP_BINS) tools/kernel.ld
+$(OBJDIR)/ucore-kernel-piggy: $(BUILD_DIR)  $(OBJ) $(USER_APP_BINS) tools/kernel.ld
 	@echo LINK $@
 	$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
 					$(addsuffix .piggy.o, $(USER_APP_BINS)) -o $@
@@ -154,14 +155,14 @@ clean:
 	-rm -rf boot/loader.o boot/loader boot/loader.bin
 	-rm -rf $(OBJDIR)
 
-qemu: $(OBJDIR)/ucore-kernel-initrd
-	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-initrd
+qemu: $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
+	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
 
-debug: $(OBJDIR)/ucore-kernel-initrd
-	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-initrd -S -s
+debug: $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
+	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE) -S -s
 
-gdb: $(OBJDIR)/ucore-kernel-initrd
-	$(GDB) $(OBJDIR)/ucore-kernel-initrd
+gdb: $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
+	$(GDB) $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPENDS)
