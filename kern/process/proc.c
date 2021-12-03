@@ -768,8 +768,8 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
      *    (3.5) callpgdir_alloc_page to allocate pages for BSS, memset zero in these pages
      * (4) call mm_map to setup user stack, and put parameters into user stack
      * (5) setup current process's mm, cr3, reset pgidr (using lcr3 MARCO)
-     * (6) setup uargc and uargv in user stacks
-     * (7) setup trapframe for user environment
+     * (6) setup trapframe for user environment (You have done in LAB5)
+     * (7) store argc and kargv to a0 and a1 register in trapframe
      * (8) if up steps failed, you should cleanup the env.
      */
     #ifdef LAB8_EX2
