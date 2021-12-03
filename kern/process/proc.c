@@ -622,7 +622,7 @@ load_icode_read(int fd, void *buf, size_t len, off_t offset) {
 // 3. copy TEXT/DATA/BSS parts in binary to memory space of process
 // 4. call mm_map to setup user stack, and put parameters into user stack
 // 5. setup trapframe for user environment
-#ifdef PIGGY
+#ifndef LAB8_EX2
 static int load_icode(unsigned char *binary, size_t size) { // load_icode from binary in kernel file, For LAB5-LAB7
     if (current->mm != NULL) panic("load_icode: current->mm must be empty.\n");
     int ret = -E_NO_MEM;
@@ -948,7 +948,7 @@ failed_cleanup:
 
 // do_execve - call exit_mmap(mm)&pug_pgdir(mm) to reclaim memory space of current process
 //           - call load_icode to setup new memory space accroding binary prog.
-#ifdef PIGGY
+#ifndef LAB8_EX2
 int
 do_execve(const char *name, size_t len, unsigned char *binary, size_t size) {
     struct mm_struct *mm = current->mm;
@@ -1136,7 +1136,7 @@ do_kill(int pid) {
 }
 
 // kernel_execve - do SYS_exec syscall to exec a user program called by user_main kernel_thread
-#ifdef PIGGY
+#ifndef LAB8_EX2
 static int kernel_execve(const char *name, unsigned char *binary, size_t size) {
     int ret, len = strlen(name);
     asm volatile(
@@ -1179,7 +1179,7 @@ static int kernel_execve(const char *name, const char **argv) {
 #endif
 
 
-#ifdef PIGGY
+#ifndef LAB8_EX2
     #define __KERNEL_EXECVE(name, binary, size) ({                          \
                 kprintf("kernel_execve: pid = %d, name = \"%s\".\n",        \
                         current->pid, name);                                \
@@ -1221,7 +1221,7 @@ static int kernel_execve(const char *name, const char **argv) {
 // user_main - kernel thread used to exec a user program
 static int
 user_main(void *arg) {
-    KERNEL_EXECVE(sh);
+    KERNEL_EXECVE(exit);
     panic("user_main execve failed.\n");
 }
 
@@ -1229,7 +1229,7 @@ user_main(void *arg) {
 static int
 init_main(void *arg) {
 	int ret;
-#ifndef PIGGY
+#ifdef LAB8_EX2
     if ((ret = vfs_set_bootfs("disk0:")) != 0) {
         panic("set boot fs failed: %e.\n", ret);
     }
@@ -1249,7 +1249,7 @@ init_main(void *arg) {
     while (do_wait(0, NULL) == 0) {
         schedule();
     }
-#ifndef PIGGY
+#ifdef LAB8_EX2
     fs_cleanup();
 #endif
     kprintf("all user-mode processes have quit.\n");

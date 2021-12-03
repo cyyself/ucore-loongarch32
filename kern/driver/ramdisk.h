@@ -20,7 +20,7 @@
 #include <ide.h>
 
 /* defined in ldscript */
-#ifdef PIGGY
+#ifndef LAB8_EX2
     #define CHECK_INITRD_EXIST() (0)
     #define INITRD_SIZE() (0)
 #else

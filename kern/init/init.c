@@ -44,7 +44,7 @@ kern_init(void) {
     
     sched_init();
     proc_init();                // init process table
-#ifndef PIGGY
+#ifdef LAB8_EX2
     ide_init();
     fs_init();
 #endif
