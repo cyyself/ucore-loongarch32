@@ -1177,34 +1177,38 @@ user_main(void *arg) {
 static int
 init_main(void *arg) {
 	int ret;
-    //TODO
-    
+#ifndef PIGGY
     if ((ret = vfs_set_bootfs("disk0:")) != 0) {
         panic("set boot fs failed: %e.\n", ret);
     }
-	
+#endif
     size_t nr_free_pages_store = nr_free_pages();
     size_t slab_allocated_store = kallocated();
-
+    
     int pid = kernel_thread(user_main, NULL, 0);
     if (pid <= 0) {
         panic("create user_main failed.\n");
     }
-     extern void check_sync(void);
+#ifdef LAB8_EX2
+    extern void check_sync(void);
     check_sync();                // check philosopher sync problem
+#endif
 
     while (do_wait(0, NULL) == 0) {
         schedule();
     }
-//TODO
+#ifndef PIGGY
     fs_cleanup();
+#endif
     kprintf("all user-mode processes have quit.\n");
     assert(initproc->cptr == NULL && initproc->yptr == NULL && initproc->optr == NULL);
     assert(nr_process == 2);
     assert(list_next(&proc_list) == &(initproc->list_link));
     assert(list_prev(&proc_list) == &(initproc->list_link));
+#ifndef LAB8_EX2
     assert(nr_free_pages_store == nr_free_pages());
     assert(slab_allocated_store == kallocated());
+#endif
     kprintf("init check memory pass.\n");
     return 0;
 }

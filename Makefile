@@ -127,6 +127,7 @@ obj/ucore-kernel-piggy: $(BUILD_DIR)  $(OBJ) $(USER_APP_BINS) tools/kernel.ld
 	@echo LINK $@
 	$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
 					$(addsuffix .piggy.o, $(USER_APP_BINS)) -o $@
+	$(OBJDUMP) -S $@ > $(OBJDIR)/kernel.asm
 	$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
 
 $(DEPDIR)/%.d: $(SRCDIR)/%.c
