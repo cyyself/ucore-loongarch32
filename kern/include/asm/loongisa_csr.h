@@ -958,7 +958,6 @@
 #else  /* !__ASSEMBLY__ */
 #include <lcsrintrin.h>
 
-// TODO: removed in the future
 void panic(const char *fmt, ...);
 
 static inline void write_csr_index(unsigned idx) {
@@ -974,7 +973,6 @@ static inline unsigned read_csr_pagesize(void) {
 }
 
 static inline unsigned mask2size(unsigned mask) {
-	// TODO
 	panic("'%s' unfinished", __func__);
 	return 0;
 }

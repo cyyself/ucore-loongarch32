@@ -25,7 +25,6 @@ ide_wait_ready(unsigned int iobase, bool check_error) {
     return 0;
 }
 
-// TODO: check if ramdisk are there
 void
 ide_init(void) {
   int i;

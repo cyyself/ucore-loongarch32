@@ -284,8 +284,7 @@ kernel_thread(int (*fn)(void *), void *arg, uint32_t clone_flags) {
     tf.tf_prmd &= ~CSR_CRMD_PLV; // clear plv to set kernel mode (PLV=0)
     tf.tf_estat |= CSR_CRMD_IE;
     // no need exl for Loongarch32
-    // TODO: MIPS GP?
-    tf.tf_era = (uint32_t)kernel_thread_entry;      //TODO  
+    tf.tf_era = (uint32_t)kernel_thread_entry;
     return do_fork(clone_flags | CLONE_VM, 0, &tf);
 }
 
@@ -388,8 +387,6 @@ copy_thread(struct proc_struct *proc, uintptr_t esp, struct trapframe *tf) {
     proc->context.sf_sp = (uintptr_t)(proc->tf) - 32;
 }
 
-//copy_fs&put_fs function used by do_fork in LAB8
-//TODO
 
 static int
 copy_fs(uint32_t clone_flags, struct proc_struct *proc) {
@@ -538,7 +535,6 @@ fork_out:
     return ret;
 
 bad_fork_cleanup_fs:
-//TODO
     put_fs(proc);
 bad_fork_cleanup_kstack:
     put_kstack(proc);
@@ -570,7 +566,6 @@ do_exit(int error_code) {
         }
         current->mm = NULL;
     }
-    //TODO
     put_fs(current); //in LAB8
     current->state = PROC_ZOMBIE;
     current->exit_code = error_code;
@@ -608,7 +603,6 @@ do_exit(int error_code) {
 }
 
 //load_icode_read is used by load_icode in LAB8
-//TODO
 
 static int
 load_icode_read(int fd, void *buf, size_t len, off_t offset) {
@@ -1020,12 +1014,10 @@ do_execve(const char *name, int argc, const char **argv) {
     }
     path = argv[0];
     unlock_mm(mm);
-    //TODO
     fs_closeall(current->fs_struct);
 
     /* sysfile_open will check the first argument path, thus we have to use a user-space pointer, and argv[0] may be incorrect */	
     int fd;
-    //TODO
     
     if ((ret = fd = sysfile_open(path, O_RDONLY)) < 0) {
         goto execve_exit;
@@ -1039,7 +1031,6 @@ do_execve(const char *name, int argc, const char **argv) {
         }
         current->mm = NULL;
     }
-    //TODO
     
     ret= -E_NO_MEM;;
     if ((ret = load_icode(fd, argc, kargv)) != 0) {
@@ -1294,7 +1285,6 @@ proc_init(void) {
     idleproc->kstack = (uintptr_t)bootstack;
     idleproc->need_resched = 1;
 
-//TODO
 
     if ((idleproc->fs_struct = fs_create()) == NULL) {
       panic("create fs_struct (idleproc) failed.\n");
