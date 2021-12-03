@@ -1221,13 +1221,18 @@ static int kernel_execve(const char *name, const char **argv) {
 // user_main - kernel thread used to exec a user program
 static int
 user_main(void *arg) {
+#ifdef LAB8_EX2
+    KERNEL_EXECVE(sh);
+#else
     KERNEL_EXECVE(exit);
+#endif
     panic("user_main execve failed.\n");
 }
 
 // init_main - the second kernel thread used to create user_main kernel threads
 static int
 init_main(void *arg) {
+#ifdef LAB5_EX1
 	int ret;
 #ifdef LAB8_EX2
     if ((ret = vfs_set_bootfs("disk0:")) != 0) {
@@ -1263,6 +1268,13 @@ init_main(void *arg) {
 #endif
     kprintf("init check memory pass.\n");
     return 0;
+#else
+    // For LAB4
+    kprintf("this initproc, pid = %d, name = \"%s\"\n", current->pid, get_proc_name(current));
+    kprintf("To U: \"%s\".\n", (const char *)arg);
+    kprintf("To U: \"en.., Bye, Bye. :)\"\n");
+    return 0;
+#endif
 }
 
 // proc_init - set up the first kernel thread idleproc "idle" by itself and 
