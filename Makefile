@@ -1,3 +1,5 @@
+# LAB CONFIG BEGIN
+
 LAB1	:= -DLAB1_EX4 #-D_SHOW_100_TICKS -D_SHOW_SERIAL_INPUT
 LAB2	:= -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3
 LAB3	:= -DLAB3_EX1 -DLAB3_EX2
@@ -6,7 +8,14 @@ LAB5	:= -DLAB5_EX1 -DLAB5_EX2
 LAB6	:= -DLAB6_EX2
 LAB7	:= -DLAB7_EX1 #-D_SHOW_PHI
 LAB8	:= -DLAB8_EX1 -DLAB8_EX2
-USER_OBJ_MODE	:= initrd
+
+# LAB CONFIG END
+
+ifdef LAB8
+	USER_OBJ_MODE	:= initrd
+else
+	USER_OBJ_MODE	:= piggy
+endif
 
 EMPTY	:=
 SPACE	:= $(EMPTY) $(EMPTY)
@@ -179,8 +188,8 @@ define make-user-app
 $1: $(BUILD_DIR) $(addsuffix .o,$1) $(USER_LIB)
 	@echo LINK $$@
 	$(LD) -T $(USER_LIB_SRCDIR)/user.ld  $(addsuffix .o,$1) --whole-archive $(USER_LIB) -o $$@
-	$(SED) 's/$$$$FILE/$(notdir $1)/g' tools/piggy.S.in > $(USER_OBJDIR)/piggy.S
-	$(CC) -c $(USER_OBJDIR)/piggy.S -o $$@.piggy.o
+	$(SED) 's/$$$$FILE/$(notdir $1)/g' tools/piggy.S.in > $1.S
+	$(CC) -c $1.S -o $$@.piggy.o
 endef
 
 $(foreach bdir,$(USER_APP_BINS),$(eval $(call make-user-app,$(bdir))))
