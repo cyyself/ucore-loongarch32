@@ -102,8 +102,10 @@ void serial_int_handler(void *opaque)
     // LAB1 EXERCISE4: YOUR CODE
     kprintf("got input %c\n",c);
 #endif
+#ifdef LAB8_EX2
     extern void dev_stdin_write(char c);
     dev_stdin_write(c);
+#endif
 }
 
 /* *

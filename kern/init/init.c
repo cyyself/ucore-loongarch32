@@ -31,20 +31,36 @@ kern_init(void) {
     cons_init();                // init the console
     clock_init();               // init clock interrupt
 
-    check_initrd();
-
     const char *message = "(THU.CST) os is loading ...\n\n";
     kprintf(message);
     
     print_kerninfo();
-    
+#ifdef LAB2_EX1
     pmm_init();                 // init physical memory management
-
+#else
+    // For LAB1
+    kprintf("LAB1 Check - Please press your keyboard manually and see what happend.\n");
+    intr_enable();
+    while(1);
+#endif
+#ifdef LAB3_EX1
     vmm_init();                 // init virtual memory management
-    
+#else
+    // For LAB2
+    kprintf("LAB2 Check Pass!\n");
+    intr_enable();
+    while(1);
+#endif
+#ifndef LAB4_EX1
+    // For LAB3
+    kprintf("LAB3 Check Pass!\n");
+    intr_enable();
+    while(1);
+#endif
     sched_init();
     proc_init();                // init process table
 #ifdef LAB8_EX2
+    check_initrd();
     ide_init();
     fs_init();
 #endif

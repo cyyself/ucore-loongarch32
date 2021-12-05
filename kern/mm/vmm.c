@@ -433,7 +433,7 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
   *   mm->pgdir : the PDT of these vma
   *
   */
-  ptep = ???              //(1) try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
+  //(1) try to find a pte, if pte's PT(Page Table) isn't existed, then create a PT.
   if (*ptep == 0) {
                           //(2) if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
   }

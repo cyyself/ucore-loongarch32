@@ -28,7 +28,9 @@ int clock_int_handler(void * data)
   }
 #endif
 #endif
+#ifdef LAB7_EX1
   run_timer_list();
+#endif
   reload_timer();
   return 0;
 }

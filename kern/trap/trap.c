@@ -95,13 +95,6 @@ static inline int get_error_code(int write, pte_t *pte)
 
 static int
 pgfault_handler(struct trapframe *tf, uint32_t addr, uint32_t error_code) {
-#if 0
-    extern struct mm_struct *check_mm_struct;
-    if (check_mm_struct != NULL) {
-        return do_pgfault(check_mm_struct, error_code, addr);
-    }
-    panic("unhandled page fault.\n");
-#endif
   extern struct mm_struct *check_mm_struct;
   if(check_mm_struct !=NULL) { //used for test check_swap
     //print_pgfault(tf);
@@ -125,19 +118,11 @@ pgfault_handler(struct trapframe *tf, uint32_t addr, uint32_t error_code) {
 /* use software emulated X86 pgfault */
 static void handle_tlbmiss(struct trapframe* tf, int write)
 {
-#if 0
-  if(!trap_in_kernel(tf)){
-    print_trapframe(tf);
-    while(1);
-  }
-#endif
 
   static int entercnt = 0;
   entercnt ++;
   //kprintf("## enter handle_tlbmiss %d times\n", entercnt);
   int in_kernel = trap_in_kernel(tf);
-  assert(current_pgdir != NULL);
-  //print_trapframe(tf);
   uint32_t badaddr = tf->tf_badv;
   int ret = 0;
   pte_t *pte = get_pte(current_pgdir, tf->tf_badv, 0);

@@ -198,7 +198,7 @@ pmm_init(void) {
     check_boot_pgdir();
 
     memset(boot_pgdir, 0, PGSIZE);
-    print_pgdir();
+    //print_pgdir();
 
   	kmalloc_init();
 }

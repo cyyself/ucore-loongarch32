@@ -122,14 +122,12 @@ alloc_proc(void) {
         memset(proc->name, 0, PROC_NAME_LEN);
         proc->exit_code = 0;
         proc->wait_state = 0;
-        list_init(&(proc->run_link));
         list_init(&(proc->list_link));
-        proc->time_slice = 0;
         proc->cptr = proc->yptr = proc->optr = NULL;
         proc->fs_struct = NULL;
-    #endif
-    //LAB8:EXERCISE2 YOUR CODE HINT:need add some code to init fs in proc_struct, ...
-    #ifdef LAB8_EX2
+        proc->rq = NULL;
+        list_init(&(proc->run_link));
+        proc->time_slice = 0;
     #endif
     }
     return proc;
@@ -1273,6 +1271,7 @@ init_main(void *arg) {
     kprintf("this initproc, pid = %d, name = \"%s\"\n", current->pid, get_proc_name(current));
     kprintf("To U: \"%s\".\n", (const char *)arg);
     kprintf("To U: \"en.., Bye, Bye. :)\"\n");
+    panic("LAB4 Check Passed!");
     return 0;
 #endif
 }
