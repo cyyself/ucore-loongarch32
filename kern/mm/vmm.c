@@ -49,8 +49,6 @@ mm_create(void) {
     mm->pgdir = NULL;
     mm->map_count = 0;
 
-    mm->sm_priv = NULL;
-
     set_mm_count(mm, 0);
     sem_init(&(mm->mm_sem), 1);
   }	

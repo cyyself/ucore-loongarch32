@@ -36,7 +36,6 @@ struct mm_struct {
     struct vma_struct *mmap_cache; // current accessed vma, used for speed purpose
     pde_t *pgdir;                  // the PDT of these vma
     int map_count;                 // the count of these vma
-	void *sm_priv;				   // the private data for swap manager
 	atomic_t mm_count;
 	semaphore_t mm_sem;
 	int locked_by;
