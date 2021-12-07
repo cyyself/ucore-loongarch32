@@ -212,27 +212,6 @@ pmm_init(void) {
 // return vaule: the kernel virtual address of this pte
 pte_t *
 get_pte(pde_t *pgdir, uintptr_t la, bool create) {
-      /* LAB2 EXERCISE2: YOUR CODE
-     *
-     * If you need to visit a physical address, please use KADDR()
-     * please read pmm.h for useful macros
-     *
-     * Maybe you want help comment, BELOW comments can help you finish the code
-     *
-     * Some Useful MACROs and DEFINEs, you can use them in below implementation.
-     * MACROs or Functions:
-     *   PDX(la) = the index of page directory entry of VIRTUAL ADDRESS la.
-     *   KADDR(pa) : takes a physical address and returns the corresponding kernel virtual address.
-     *   set_page_ref(page,1) : means the page be referenced by one time
-     *   page2pa(page): get the physical address of memory which this (struct Page *) page  manages
-     *   struct Page * alloc_page() : allocation a page
-     *   memset(void *s, char c, size_t n) : sets the first n bytes of the memory area pointed by s
-     *                                       to the specified value c.
-     * DEFINEs:
-     *   PTE_P           0x001                   // page table/directory entry flags bit : Present
-     *   PTE_W           0x002                   // page table/directory entry flags bit : Writeable
-     *   PTE_U           0x004                   // page table/directory entry flags bit : User can access
-     */
 #ifdef LAB2_EX2
     pde_t *pdep = NULL; // find page directory entry
     pdep = pgdir + PDX(la);
@@ -258,6 +237,27 @@ get_pte(pde_t *pgdir, uintptr_t la, bool create) {
     //kprintf("@@GET_PTE %x %x %x\n", *pdep, ret, *ret);
     return  ret;// return page table entry
 #else
+    /* LAB2 EXERCISE2: YOUR CODE
+     *
+     * If you need to visit a physical address, please use KADDR()
+     * please read pmm.h for useful macros
+     *
+     * Maybe you want help comment, BELOW comments can help you finish the code
+     *
+     * Some Useful MACROs and DEFINEs, you can use them in below implementation.
+     * MACROs or Functions:
+     *   PDX(la) = the index of page directory entry of VIRTUAL ADDRESS la.
+     *   KADDR(pa) : takes a physical address and returns the corresponding kernel virtual address.
+     *   set_page_ref(page,1) : means the page be referenced by one time
+     *   page2pa(page): get the physical address of memory which this (struct Page *) page  manages
+     *   struct Page * alloc_page() : allocation a page
+     *   memset(void *s, char c, size_t n) : sets the first n bytes of the memory area pointed by s
+     *                                       to the specified value c.
+     * DEFINEs:
+     *   PTE_P           0x001                   // page table/directory entry flags bit : Present
+     *   PTE_W           0x002                   // page table/directory entry flags bit : Writeable
+     *   PTE_U           0x004                   // page table/directory entry flags bit : User can access
+     */
     pde_t *pdep = NULL;   // (1) find page directory entry
     if (0) {              // (2) check if entry is not present
                           // (3) check if creating is needed, then alloc page for page table
@@ -289,6 +289,21 @@ get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store) {
 //note: PT is changed, so the TLB need to be invalidate 
 static inline void
 page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep) {
+#ifdef LAB2_EX3
+	if (ptep && (*ptep & PTE_P)) { // check if page directory is present
+		struct Page *page = pte2page(*ptep); // find corresponding page to pte
+		// decrease page reference
+    page_ref_dec(page);
+		// and free it when reach 0
+    if(page_ref(page) == 0){
+       free_page(page);
+    }
+		// clear page directory entry
+    *ptep = 0;
+	}
+		// flush tlb
+  tlb_invalidate_all();
+#else
     /* LAB2 EXERCISE3: YOUR CODE
      *
      * Please check if ptep is valid, and tlb must be manually updated if mapping is updated
@@ -305,21 +320,6 @@ page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep) {
      * DEFINEs:
      *   PTE_P           0x001                   // page table/directory entry flags bit : Present
      */
-#ifdef LAB2_EX3
-	if (ptep && (*ptep & PTE_P)) { // check if page directory is present
-		struct Page *page = pte2page(*ptep); // find corresponding page to pte
-		// decrease page reference
-    page_ref_dec(page);
-		// and free it when reach 0
-    if(page_ref(page) == 0){
-       free_page(page);
-    }
-		// clear page directory entry
-    *ptep = 0;
-	}
-		// flush tlb
-  tlb_invalidate_all();
-#else
     if (0) {                      //(1) check if this page table entry is present
         struct Page *page = NULL; //(2) find corresponding page to pte
                                   //(3) decrease page reference
@@ -611,7 +611,8 @@ copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end, bool share) {
           assert(page!=NULL);
           assert(npage!=NULL);
           int ret=0;
-          /* LAB5 EXERCISE2: YOUR CODE
+        #ifdef LAB5_EX2
+        /* LAB5 EXERCISE2: YOUR CODE
          * replicate content of page to npage, build the map of phy addr of nage with the linear addr start
          *
          * Some Useful MACROs and DEFINEs, you can use them in below implementation.
@@ -625,7 +626,6 @@ copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end, bool share) {
          * (3) memory copy from src_kvaddr to dst_kvaddr, size is PGSIZE
          * (4) build the map of phy addr of  nage with the linear addr start
          */
-        #ifdef LAB5_EX2
           memcpy(page2kva(npage), page2kva(page), PGSIZE);
           page_insert(to, npage, start,perm);
         #endif
