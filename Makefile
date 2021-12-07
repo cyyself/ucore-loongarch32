@@ -133,24 +133,24 @@ all: checkdirs $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
 $(shell mkdir -p $(DEP_DIR))
 
 $(OBJDIR)/ucore-kernel:  checkdirs $(OBJ) tools/kernel.ld
-	@$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) -o $@
+	$(V)$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) -o $@
 
 $(OBJDIR)/ucore-kernel-piggy: $(BUILD_DIR)  $(OBJ) $(USER_APP_BINS) tools/kernel.ld
-	@$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
+	$(V)$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
 					$(addsuffix .piggy.o, $(USER_APP_BINS)) -o $@
-	@$(OBJDUMP) -S $@ > $(OBJDIR)/kernel.asm
-	@$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
+	$(V)$(OBJDUMP) -S $@ > $(OBJDIR)/kernel.asm
+	$(V)$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
 
 $(DEPDIR)/%.d: $(SRCDIR)/%.c
 	@echo DEP $<
-	@set -e; rm -f $@; \
+	$(V)set -e; rm -f $@; \
 		$(CC) -MM -MT "$(OBJDIR)/$*.o $@" $(CFLAGS) $(INCLUDES) $< > $@; 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) -c $(INCLUDES) $(CFLAGS) $(MACH_DEF) $<  -o $@
+	$(V)$(CC) -c $(INCLUDES) $(CFLAGS) $(MACH_DEF) $<  -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.S
-	$(CC) -c -fno-pic -mno-shared -D__ASSEMBLY__ $(MACH_DEF) $(INCLUDES) -g -G0  $<  -o $@
+	$(V)$(CC) -c -fno-pic -mno-shared -D__ASSEMBLY__ $(MACH_DEF) $(INCLUDES) -g -G0  $<  -o $@
 
 checkdirs: $(BUILD_DIR) $(DEP_DIR)
 
@@ -166,13 +166,13 @@ clean:
 	-rm -rf $(OBJDIR)
 
 qemu: $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
-	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
+	$(V)$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
 
 debug: $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
-	$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE) -S -s
+	$(V)$(QEMU) $(QEMUOPTS) -kernel $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE) -S -s
 
 gdb: $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
-	$(GDB) $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
+	$(V)$(GDB) $(OBJDIR)/ucore-kernel-$(USER_OBJ_MODE)
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPENDS)
@@ -181,23 +181,23 @@ endif
 #user lib
 
 $(USER_LIB): $(BUILD_DIR) $(USER_LIB_OBJ)
-	@$(AR) rcs $@ $(USER_LIB_OBJ)
+	$(V)$(AR) rcs $@ $(USER_LIB_OBJ)
 
 #user applications
 define make-user-app
 $1: $(BUILD_DIR) $(addsuffix .o,$1) $(USER_LIB)
-	@$(LD) -T $(USER_LIB_SRCDIR)/user.ld  $(addsuffix .o,$1) --whole-archive $(USER_LIB) -o $$@
-	@$(SED) 's/$$$$FILE/$(notdir $1)/g' tools/piggy.S.in > $1.S
-	@$(CC) -c $1.S -o $$@.piggy.o
+	$(V)$(LD) -T $(USER_LIB_SRCDIR)/user.ld  $(addsuffix .o,$1) --whole-archive $(USER_LIB) -o $$@
+	$(V)$(SED) 's/$$$$FILE/$(notdir $1)/g' tools/piggy.S.in > $1.S
+	$(V)$(CC) -c $1.S -o $$@.piggy.o
 endef
 
 $(foreach bdir,$(USER_APP_BINS),$(eval $(call make-user-app,$(bdir))))
 
 $(USER_OBJDIR)/%.o: $(USER_SRCDIR)/%.c
-	$(CC) -c  $(USER_INCLUDE) -I$(SRCDIR)/include $(CFLAGS)  $<  -o $@
+	$(V)$(CC) -c  $(USER_INCLUDE) -I$(SRCDIR)/include $(CFLAGS)  $<  -o $@
 
 $(USER_OBJDIR)/%.o: $(USER_SRCDIR)/%.S
-	$(CC) -c -fno-pic -mno-shared -D__ASSEMBLY__ $(USER_INCLUDE) -I$(SRCDIR)/include -g -G0  $<  -o $@
+	$(V)$(CC) -c -fno-pic -mno-shared -D__ASSEMBLY__ $(USER_INCLUDE) -I$(SRCDIR)/include -g -G0  $<  -o $@
 
 
 # filesystem
@@ -208,18 +208,18 @@ $(TOOL_MKSFS): tools/mksfs.c
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
 
 $(OBJDIR)/initrd.img.o: $(TOOL_MKSFS) $(USER_APP_BINS)
-	@rm -rf $(ROOTFS_DIR) $(ROOTFS_IMG)
-	@mkdir $(ROOTFS_DIR)
-	@cp $(USER_APP_BINS) $(ROOTFS_DIR)
-	@cp -r $(USER_SRCDIR)/_archive/* $(ROOTFS_DIR)/
-	@dd if=/dev/zero of=$(ROOTFS_IMG) count=$(INITRD_BLOCK_CNT)
-	@$(TOOL_MKSFS) $(ROOTFS_IMG) $(ROOTFS_DIR)
-	@$(SED) 's%_FILE_%$(ROOTFS_IMG)%g' tools/initrd_piggy.S.in > $(USER_OBJDIR)/initrd_piggy.S
-	@$(CC) -c $(USER_OBJDIR)/initrd_piggy.S -o $(OBJDIR)/initrd.img.o
+	$(V)rm -rf $(ROOTFS_DIR) $(ROOTFS_IMG)
+	$(V)mkdir $(ROOTFS_DIR)
+	$(V)cp $(USER_APP_BINS) $(ROOTFS_DIR)
+	$(V)cp -r $(USER_SRCDIR)/_archive/* $(ROOTFS_DIR)/
+	$(V)dd if=/dev/zero of=$(ROOTFS_IMG) count=$(INITRD_BLOCK_CNT)
+	$(V)$(TOOL_MKSFS) $(ROOTFS_IMG) $(ROOTFS_DIR)
+	$(V)$(SED) 's%_FILE_%$(ROOTFS_IMG)%g' tools/initrd_piggy.S.in > $(USER_OBJDIR)/initrd_piggy.S
+	$(V)$(CC) -c $(USER_OBJDIR)/initrd_piggy.S -o $(OBJDIR)/initrd.img.o
 
 $(OBJDIR)/ucore-kernel-initrd: $(BUILD_DIR) $(OBJ) tools/kernel.ld $(OBJDIR)/initrd.img.o
-	@$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
+	$(V)$(LD) -nostdlib -n -G 0 -static -T tools/kernel.ld $(OBJ) \
 				 $(OBJDIR)/initrd.img.o -o $@
-	@$(OBJDUMP) -S $@ > $(OBJDIR)/kernel.asm
-	@$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
+	$(V)$(OBJDUMP) -S $@ > $(OBJDIR)/kernel.asm
+	$(V)$(OBJDUMP) -t $@ | $(SED) '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $(OBJDIR)/kernel.sym
 	
