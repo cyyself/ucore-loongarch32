@@ -443,9 +443,6 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
     }
     ret = -E_NO_MEM;
     //LAB4:EXERCISE2 YOUR CODE
-    //LAB8:EXERCISE2 YOUR CODE  HINT:how to copy the fs in parent's proc_struct?
-    #ifdef LAB8_EX2
-    #endif
     /*
      * Some Useful MACROs, Functions and DEFINEs, you can use them in below implementation.
      * MACROs or Functions:
@@ -520,7 +517,7 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
 
 
 
-        //list_add(&proc_list, &(proc->list_link));
+        list_add(&proc_list, &(proc->list_link));
         set_links(proc);
 
         wakeup_proc(proc);
@@ -768,7 +765,7 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
         if (current->mm != NULL) {
             panic("load_icode: current->mm must be empty.\n");
         }
-        //panic("unimpl");
+        
         int ret = -E_NO_MEM;
         struct mm_struct *mm;
         if ((mm = mm_create()) == NULL) {
