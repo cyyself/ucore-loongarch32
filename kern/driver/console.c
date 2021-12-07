@@ -100,7 +100,6 @@ void serial_int_handler(void *opaque)
     int c = cons_getc();
 #if defined(LAB1_EX4) && defined(_SHOW_SERIAL_INPUT)
     // LAB1 EXERCISE4: YOUR CODE
-    kprintf("got input %c\n",c);
 #endif
 #ifdef LAB8_EX2
     extern void dev_stdin_write(char c);

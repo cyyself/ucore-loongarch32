@@ -401,19 +401,6 @@ do_pgfault(struct mm_struct *mm, uint32_t error_code, uintptr_t addr) {
 
   pte_t *ptep=NULL;
 #ifdef LAB3_EX2
-  if ((ptep = get_pte(mm->pgdir, addr, 1)) == NULL) {
-    goto failed;
-  }
-
-  if (*ptep == 0) { // if the phy addr isn't exist, then alloc a page & map the phy addr with logical addr
-    if (pgdir_alloc_page(mm->pgdir, addr, perm) == NULL) {
-      goto failed;
-    }
-  }
-  else { // if this pte is a swap entry, then load data from disk to a page with phy addr, 
-      kprintf("no swap in ucore-la32 but ptep is %x, failed\n",*ptep);
-  }
-#else
   /*LAB3 EXERCISE 2: YOUR CODE
   * Maybe you want help comment, BELOW comments can help you finish the code
   *

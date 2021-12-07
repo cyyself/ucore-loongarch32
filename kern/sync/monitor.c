@@ -27,17 +27,7 @@ void
 cond_signal (condvar_t *cvp) {
 #ifdef LAB7_EX1
    //LAB7 EXERCISE1: YOUR CODE
-   kprintf("cond_signal begin: cvp %x, cvp->count %d, cvp->owner->next_count %d\n", cvp, cvp->count, cvp->owner->next_count);  
-  /*
-   *      cond_signal(cv) {
-   *          if(cv.count>0) {
-   *             mt.next_count ++;
-   *             signal(cv.sem);
-   *             wait(mt.next);
-   *             mt.next_count--;
-   *          }
-   *       }
-   */
+
 #endif
      if(cvp->count>0) {
         cvp->owner->next_count ++;
@@ -54,16 +44,7 @@ void
 cond_wait (condvar_t *cvp) {
 #ifdef LAB7_EX1
     //LAB7 EXERCISE1: YOUR CODE
-    kprintf("cond_wait begin:  cvp %x, cvp->count %d, cvp->owner->next_count %d\n", cvp, cvp->count, cvp->owner->next_count);
-   /*
-    *         cv.count ++;
-    *         if(mt.next_count>0)
-    *            signal(mt.next)
-    *         else
-    *            signal(mt.mutex);
-    *         wait(cv.sem);
-    *         cv.count --;
-    */
+
 #endif
       cvp->count++;
       if(cvp->owner->next_count > 0)
