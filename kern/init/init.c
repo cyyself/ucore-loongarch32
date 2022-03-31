@@ -10,7 +10,7 @@
 #include <sched.h>
 #include <ide.h>
 #include <fs.h>
-
+struct TLBRF_context *save_TLBRF;
 
 void setup_exception_vector()
 {
