@@ -15,8 +15,21 @@
 void setup_exception_vector()
 {
     extern unsigned char exception_handler[];
+    // TODO:write physical address
+
     __lcsr_csrwr(exception_handler, LISA_CSR_EBASE);
     __lcsr_csrwr(exception_handler, LISA_CSR_RFBASE); // For QEMU clear high 3 bit of PA
+    // uint32_t sr0 = __lcsr_csrrd(LISA_CSR_RFBASE);
+    uint32_t sr_rfbase = __lcsr_csrrd(LISA_CSR_RFBASE)&0x1fffffff;
+    // uint32_t sr_ebase = __lcsr_csrrd(LISA_CSR_EBASE)&0x1fffffff;
+    // kprintf("before sr print\n");
+    kprintf("%x\n",sr_rfbase);
+    // kprintf("%x\n",sr_ebase);
+    __lcsr_csrwr(sr_rfbase,LISA_CSR_RFBASE);
+    // __lcsr_csrwr(sr_ebase,LISA_CSR_EBASE);
+    // uint32_t sr1 = __lcsr_csrrd(LISA_CSR_RFBASE);
+    // kprintf("%x\n",sr1);
+    
 }
 
 void __noreturn
