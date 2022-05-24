@@ -4,12 +4,12 @@
 
 .extern current
 .extern loongarch_trap
- .extern save_TLBRF
+.extern save_TLBRF
 
 .section .text
 .global exception_handler
 .global exception_return
- .global ertn_pc_next
+.global ertn_pc_next
 
 .type exception_handler, @function
 exception_handler:
@@ -131,46 +131,40 @@ common_exception:
 
 
     //judge exception type 
-    csrrd   t1, LISA_CSR_CRMD
-    li      t0, 0xfffffffc
-    and    t1,t1,t0
-    csrwr   t1, LISA_CSR_CRMD
-    csrrd   t1, LISA_CSR_RFBADV
-//   andi    t1, t1, 0x01
-//   li      t0, 0x01
-//    bne     t0, t1, 2f
+    csrrd   t1, LISA_CSR_RFEPC
+    andi    t1, t1, 0x01
+    li      t0, 0x01
+    bne     t0, t1, 2f
 
-//   // save TLB_r structure addr at t8 
-//   la  t8, save_TLBRF
-//	  // li	t0, 0xb0	# PLV=0, IE=0, PG=1
-//   // save TLBPRMD at TLB_r
-//	csrrd	t0, LISA_CSR_RFSAVE    // TLBPRMD
-//   st.w    t0, t8, 0
-//   // save TLBERA at TLB_r
-//   csrrd	t0, LISA_CSR_RFEPC    // TLBERA
-//   st.w    t0, t8, 4
-//   // save CRMD at TLB_r
-//   csrrd	t0, LISA_CSR_CRMD    // CRMD
-//   st.w    t0, t8, 8
-//   //save addr that after ertn at TLBERA
-//   la      t0, ertn_pc_next
-//   ori     t0, t0,0x00000001 //set isTLBR=1
-//   csrwr	t0, LISA_CSR_RFEPC
-//   ertn
-//ertn_pc_next:
-//   //restore CRMD except DA and PG
-//   ld.w    t0, t8, 8
-//   li      t1, 0xfffffe07
-//   and     t0, t0,t1
-//   ori     t0, t0,0x000000b0
-//   csrwr	t0, LISA_CSR_CRMD
-//   //restore TLBERA
-//   ld.w    t0, t8,4
-//   csrwr	t0, LISA_CSR_RFEPC
+    // save TLB_r structure addr at t8 
+    la  t8, save_TLBRF
+	; li	t0, 0xb0	# PLV=0, IE=0, PG=1
+    // save TLBPRMD at TLB_r
+	csrrd	t0, LISA_CSR_RFSAVE    // TLBPRMD
+    st.w    t0, t8, 0
+    // save TLBERA at TLB_r
+    csrrd	t0, LISA_CSR_RFEPC    // TLBERA
+    st.w    t0, t8, 4
+    // save CRMD at TLB_r
+    csrrd	t0, LISA_CSR_CRMD    // CRMD
+    st.w    t0, t8, 8
+    //save addr that after ertn at TLBERA
+    la      t0, ertn_pc_next
+    ori     t0, zero,0x00000001 //set isTLBR=1
+    csrwr	t0, LISA_CSR_RFEPC
+    ertn
+ertn_pc_next:
+    //restore CRMD except DA and PG
+    ld.w    t0, t8, 8
+    li      t1, 0xfffffe07
+    and     t0, t0,t1
+    ori     t0, zero,0x000000b0
+    csrwr	t0, LISA_CSR_CRMD
+    //restore TLBERA
+    ld.w    t0, t8,4
+    csrwr	t0, LISA_CSR_RFEPC
 
 2:
-	li	t0, 0xb0	# PLV=0, IE=0, PG=1
-    csrwr	t0, LISA_CSR_CRMD
     la.abs  t0, loongarch_trap
     jirl    ra, t0, 0
     //bl loongarch_trap
