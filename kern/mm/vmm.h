@@ -21,13 +21,6 @@ struct vma_struct {
     list_entry_t list_link;  // linear list link which sorted by start addr of vma
 };
 
-//save temporery regiter value when TLBRF
-struct TLBRF_context {
-	uint32_t TLBRPRMD;
-	uint32_t CRMD;
-	uint32_t TLBRERA;
-};
-
 #define le2vma(le, member)                  \
     to_struct((le), struct vma_struct, member)
 
