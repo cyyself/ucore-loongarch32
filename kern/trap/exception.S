@@ -13,8 +13,12 @@
 
 .type tlbrefill_handler, @function
 tlbrefill_handler:
-    // Save t0
+    // Save t0 to KS0
     csrwr   t0, LISA_CSR_KS0
+    // Save PRMD to KS1, and clear PRMD (set PPLV=0 and PIE=0)
+    li      t0, 0
+    csrwr   t0, LISA_CSR_PRMD
+    csrwr   t0, LISA_CSR_KS1
     // Save EPC(ERA) to KS2
     csrrd   t0, LISA_CSR_EPC
     csrwr   t0, LISA_CSR_KS2
@@ -25,6 +29,9 @@ tlbrefill_handler:
 
 .type tlbrefill_redirector, @function
 tlbrefill_redirector:
+    // return PRMD from KS1
+    csrrd   t0, LISA_CSR_KS1
+    csrwr   t0, LISA_CSR_PRMD
     // return EPC(ERA) from KS2
     csrrd   t0, LISA_CSR_KS2
     csrwr   t0, LISA_CSR_EPC
