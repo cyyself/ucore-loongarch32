@@ -8,11 +8,34 @@
 .section .text
 .global exception_handler
 .global exception_return
+.global tlbrefill_handler
+.global tlbrefill_redirector
+
+.type tlbrefill_handler, @function
+tlbrefill_handler:
+    // Save t0
+    csrwr   t0, LISA_CSR_KS0
+    // Save EPC(ERA) to KS2
+    csrrd   t0, LISA_CSR_EPC
+    csrwr   t0, LISA_CSR_KS2
+    // get tlbrefill_redirector pointer from KS3 as we already set it in kern/init/init.c
+    csrrd   t0, LISA_CSR_KS3
+    csrwr   t0, LISA_CSR_EPC
+    ertn
+
+.type tlbrefill_redirector, @function
+tlbrefill_redirector:
+    // return EPC(ERA) from KS2
+    csrrd   t0, LISA_CSR_KS2
+    csrwr   t0, LISA_CSR_EPC
+    // return t0 from ks0
+    csrrd   t0, LISA_CSR_KS0
+    b exception_handler
 
 .type exception_handler, @function
 exception_handler:
     // Save t0 and t1
-	csrwr   t0, LISA_CSR_KS0
+    csrwr   t0, LISA_CSR_KS0
     csrwr   t1, LISA_CSR_KS1
     // Save previous stack pointer in t1
     move    t1, sp
@@ -24,7 +47,6 @@ exception_handler:
         so you may see the rd changed.
         It's documented in the manual from loongarch.
     */
-
     // check if user mode
     csrrd   t0, LISA_CSR_PRMD  
     andi    t0, t0, 3
