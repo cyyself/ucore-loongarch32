@@ -2,7 +2,7 @@
 
 本项目基于[ucore-thumips](https://github.com/z4yx/ucore-thumips)，将其移植到了LoongArch 32上。并成功跑通了所有的用户进程。
 
-我们同样移植了去除答案的实验教学版本与实验指导书，实验版本位于本项目的no_answer分支，实验指导书[在此](https://github.com/cyyself/ucore_la32_docs)。
+我们同样移植了去除答案的实验教学版本与实验指导书，实验版本位于本项目的no_answer分支，实验指导书[在此](https://cyyself.github.io/ucore_la32_docs/)。
 
 ## 编译环境准备
 
