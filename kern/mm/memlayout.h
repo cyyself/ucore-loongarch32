@@ -6,7 +6,7 @@
 #define KERNBASE            0xa0000000
 #define KERNBASE_UNCACHED   0x80000000
 
-#define KMEMSIZE            (32 << 20)                 // 512M the maximum amount of physical memory
+#define KMEMSIZE            (32 << 20)                 // 32M the maximum amount of physical memory
 
 #define KERNTOP             (KERNBASE + KMEMSIZE)
 #define KERNTOP_UNCACHED    (KERNBASE_UNCACHED + KMEMSIZE)

@@ -21,6 +21,7 @@ static inline void write_one_tlb(int index, unsigned int hi, unsigned int low0, 
 
 static inline void tlb_replace_random(unsigned int hi, unsigned int low0, unsigned int low1)
 {
+    write_csr_tlbidx(12 << 24);
     write_csr_entryhi(hi);
     write_csr_entrylo0(low0);
     write_csr_entrylo1(low1);

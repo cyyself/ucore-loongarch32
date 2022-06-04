@@ -30,9 +30,9 @@ V       := @
 TOOLCHAIN:= /opt/loongarch32-linux-gnu
 GCCPREFIX:= loongarch32-linux-gnu-
 
-
 QEMU:= qemu-system-loongson32
-QEMUOPTS:= -M ls3a5k32 -monitor tcp::4288,server,nowait -serial stdio -m 256 -nographic
+QEMUOPTS:= -M ls3a5k32 -m 32 -nographic
+
 # use the same qemu as use_for_linux
 
 TERMINAL := gnome-terminal
