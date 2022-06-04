@@ -2,22 +2,11 @@
 
 本项目基于[ucore-thumips](https://github.com/z4yx/ucore-thumips)，将其移植到了LoongArch 32上。并成功跑通了所有的用户进程。
 
-## 环境准备
+我们同样移植了去除答案的实验教学版本与实验指导书，实验版本位于本项目的no_answer分支，实验指导书[在此](https://github.com/cyyself/ucore_la32_docs)。
 
-你需要使用龙芯提供的`use_for_linux.zip`包（已知部分有参与项目的高校有拿到），里面含有loongarch32的`gcc`、`qemu`，以及一个Linux内核。推荐把`use_for_linux`文件夹放在你的主目录下（通常为`/home/($你的用户名)`），因为我们在Makefile中指定了该路径。
+## 编译环境准备
 
-然后，你可能需要在龙芯提供的Loongarch 32资料包中找到一个gdb，也将它放在`use_for_linux`文件夹中。
-
-最后，你可以开始尝试进行`make qemu`，由于龙芯提供的`gcc`和`qemu`的二进制可能存在一些链接库找不到，因此你可能需要安装一些软件包，如果在你的发行版的包管理器中找不到，推荐使用一个`CentOS 8`或者`Fedora 34`的Docker。
-
-对于CentOS 8，使用以下命令可完成所需环境的安装：
-
-```shell
-yum install dnf-plugins-core
-yum config-manager --set-enabled powertools
-yum -y install epel-release
-yum install brlapi libcacard usbredir libslirp pulseaudio-libs SDL2 gtk3 vte291 libaio libiscsi libnfs libssh numactl-libs
-```
+我们已经将所涉及的环境（包含gnu工具链、gdb、qemu）打包为Docker镜像，等待龙芯允许后，我们会公开我们已经完成打包的所有la32r所需环境的Docker镜像。
 
 ## Makefile操作
 
@@ -47,12 +36,6 @@ make debug
 make gdb
 ```
 
-如果你想要连接qemu控制台来进行其他操作，我们默认将qemu控制台设置在了4288端口，你可以这么做：
-
-```shell
-telnet 127.0.0.1 4288
-```
-
 ## 效果展示
 
 ![debug](doc/img/debug.png)
@@ -77,7 +60,7 @@ telnet 127.0.0.1 4288
 
 ### 3. 存储空间管理
 
-在MIPS架构中，我们熟悉的固定地址空间`kseg0`和`kseg1`等被舍弃。在LoongArch32中，被改为了通过CSR中的DMW寄存器配置地址映射窗口。这一部分代码位于`kern/init/entry.S`。考虑到以后可能需要在chiplab上使用PMON进行载入，因此我们按照了PMON相同的方式映射了一段内核的内存地址，也就是`0xa0000000-0xbfffffff`直接映射到`0x00000000-0x1fffffff`。而对于IO设备，以及载入用户进程需要进行的Uncached操作，配置了`0x80000000-0x9fffffff`直接映射到`0x00000000-0x1fffffff`。
+在MIPS架构中，我们熟悉的固定地址空间`kseg0`和`kseg1`等被舍弃。在LoongArch32中，被改为了通过CSR中的DMW寄存器配置地址映射窗口。这一部分代码位于`kern/init/entry.S`。考虑到以后可能需要在chiplab上使用PMON进行载入，因此我们按照了PMON相同的方式映射了一段内核的内存地址，也就是`0xa0000000-0xbfffffff`直接映射到`0x00000000-0x1fffffff`。而对于IO设备，以及载入用户进程需要进行的Uncached操作，配置了`0x80000000-0x9fffffff`直接映射到`0x00000000-0x1fffffff`。
 
 对MIPS了解的同学不难看出，我们采用的配置方式非常类似于MIPS的KSEG0与KSEG1，但是对地址进行了对调。
 
@@ -87,14 +70,4 @@ LoongArch32中有一个比较特殊的地方，`v0`与`a0`，`v1`与`a1`寄存�
 
 ### 5. 系统调用
 
-尽管LoongArch32的`syscall`指令含有15位立即数，但是在文档中并没有找到例外处理时在什么地方读取这个Code，因此这里将这一部分立即数全部设置为0。并使用`a7`寄存器传递系统调用号。
-
-## 后续任务
-
-### Cache一致性
-
-因为做的时候并没有拿到Loongarch 32的FPGA软核，仅有QEMU，因此无法测试Cache一致性问题，因此暂时没有做写入指令后刷新数据Cache和指令Cache的操作。如果你拿到了这份代码需要在软核或实际硬件上运行，当发生错误时请修改DMW和TLB的Cache相关配置，全部改为Uncached，若是软核也可以自己魔改关闭Cache。
-
-### 将环境打包Docker
-
-已经打包Docker，等到能够公开的时候进行公开。
+尽管LoongArch32的`syscall`指令含有15位立即数，但是在文档中并没有找到例外处理时如何读取这个系统调用号，因此这里将这一部分立即数全部设置为0。并使用`a7`寄存器传递系统调用号。
