@@ -4,7 +4,7 @@
 
 我们同样移植了去除答案的实验教学版本与实验指导书，实验版本位于本项目的no_answer分支，实验指导书[在此](https://cyyself.github.io/ucore_la32_docs/)。
 
-针对操作系统比赛，我们的文档位于[doc/readme.md](doc/readme.md)，具体开发文档位于[doc/ucore移植开发文档](doc/ucore移植开发文档)。
+针对操作系统比赛，我们的文档位于[doc/readme.md](doc/readme.md)，具体开发文档位于[doc/ucore移植开发文档](doc/ucore移植开发文档.docx)。
 
 移植后ucore的演示视频在测试演示视频.mp4中
 
