@@ -181,6 +181,9 @@ trap_dispatch(struct trapframe *tf) {
     case EX_TLBR:
       handle_tlbmiss(tf, 2);
       break;
+    case EX_TLBI:
+      handle_tlbmiss(tf, 0);
+      break;
     case EX_RI:
       print_trapframe(tf);
       if(trap_in_kernel(tf)) {
