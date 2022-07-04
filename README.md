@@ -1,5 +1,4 @@
 # uCore-LoongArch 32
-比赛相关的代码及文档位于oscamp_with_docs分支中
 
 本项目基于[ucore-thumips](https://github.com/z4yx/ucore-thumips)，将其移植到了LoongArch 32上。并成功跑通了所有的用户进程。
 
