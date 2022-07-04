@@ -93,7 +93,7 @@ static void fence_i(void *va_start, int size) {
 
         This operation is not necessary when running on ISA level emulator like QEMU, but it must be done when running on real hardware or FPGA.
      */
-    asm volatile(".word 0b00111000011100101000000000000000"); // dbar, used for out-of-order machine
+    asm volatile(".word 0b00111000011100100000000000000000"); // dbar, used for out-of-order machine
     void *va_end = va_start + size;
     while (va_start < va_end) {
         asm volatile("cacop 9, %0 ,0": "=r"(va_start)); // code[2:0]=1->d-cache, code[4:3]=2->index invalidate and writeback
