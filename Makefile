@@ -3,7 +3,7 @@
 # Warning: If you changed anything in Makefile, 
 # you should execute `make clean` first.
 
-LAB1	:= -DLAB1_EX4 #-D_SHOW_100_TICKS -D_SHOW_SERIAL_INPUT
+LAB1	:= -DLAB1_EX4 -D_SHOW_100_TICKS -D_SHOW_SERIAL_INPUT
 LAB2	:= -DLAB2_EX1 -DLAB2_EX2 -DLAB2_EX3
 LAB3	:= -DLAB3_EX1 -DLAB3_EX2
 LAB4	:= -DLAB4_EX1 -DLAB4_EX2
@@ -30,6 +30,7 @@ V       := @
 TOOLCHAIN:= /opt/loongarch32-linux-gnu
 GCCPREFIX:= loongarch32-linux-gnu-
 
+#QEMU:= ~/Downloads/qemu-system-loongarch32_centos_x86_64
 QEMU:= qemu-system-loongson32
 QEMUOPTS:= -M ls3a5k32 -m 32 -nographic
 
