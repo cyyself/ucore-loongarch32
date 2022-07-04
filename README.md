@@ -6,7 +6,9 @@
 
 我们已经过测试，本移植版本可以在[chiplab](https://gitee.com/loongson-edu/chiplab/)的loongarch32软核上运行。
 
-针对操作系统比赛，我们的文档位于[doc/readme.md](doc/readme.md)。
+针对操作系统比赛，我们的文档位于[doc/readme.md](doc/readme.md)，具体开发文档位于[doc/ucore移植开发文档](doc/ucore移植开发文档.docx)。
+
+移植后ucore的演示视频在[测试演示视频.mp4](测试演示视频.mp4)中。
 
 ## 编译环境准备
 
