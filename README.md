@@ -4,6 +4,8 @@
 
 我们同样移植了去除答案的实验教学版本与实验指导书，实验版本位于本项目的no_answer分支，实验指导书[在此](https://cyyself.github.io/ucore_la32_docs/)。
 
+我们已经过测试，本移植版本可以在[chiplab](https://gitee.com/loongson-edu/chiplab/)的loongarch32软核上运行。
+
 ## 编译环境准备
 
 我们已经将所涉及的环境（包含gnu工具链、gdb、qemu）打包为Docker镜像，等待龙芯允许后，我们会公开我们已经完成打包的所有la32r所需环境的Docker镜像。
