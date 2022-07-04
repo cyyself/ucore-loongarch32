@@ -16,6 +16,7 @@
 #include <vfs.h>
 #include <sysfile.h>
 #include <loongarch_trapframe.h>
+#include <loongarch.h>
 
 /* ------------- process/thread mechanism design&implementation -------------
 (an simplified Linux process/thread mechanism )
@@ -649,7 +650,8 @@ static int load_icode(unsigned char *binary, size_t size) { // load_icode from b
             if (end < la) {
             size -= la - end;
             }
-            memcpy(UNCACHE_ADDR(page2kva(page) + off),binary + offset, size);
+            memcpy(page2kva(page) + off,binary + offset, size);
+            fence_i(page2kva(page) + off, size);
             start += size, offset += size;
         }
         end = ph->p_va + ph->p_memsz;
@@ -661,7 +663,8 @@ static int load_icode(unsigned char *binary, size_t size) { // load_icode from b
             if (end < la) {
             size -= la - end;
             }
-            memset(UNCACHE_ADDR(page2kva(page) + off), 0, size);
+            memset(page2kva(page) + off, 0, size);
+            fence_i(page2kva(page) + off, size);
             start += size;
             assert((end < la && start == end) || (end >= la && start == la));
         }
@@ -674,7 +677,8 @@ static int load_icode(unsigned char *binary, size_t size) { // load_icode from b
             if (end < la) {
             size -= la - end;
             }
-            memset(UNCACHE_ADDR(page2kva(page) + off), 0, size);
+            memset(page2kva(page) + off, 0, size);
+            fence_i(page2kva(page) + off, size);
             start += size;
         }
     }
@@ -809,9 +813,10 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
             if (end < la) {
             size -= la - end;
             }
-            if ((ret = load_icode_read(fd, UNCACHE_ADDR(page2kva(page) + off), size, offset)) != 0) {
+            if ((ret = load_icode_read(fd, page2kva(page) + off, size, offset)) != 0) {
                 goto bad_cleanup_mmap;
             }
+            fence_i(page2kva(page)+off, size);
             start += size, offset += size;
         }
 
@@ -825,7 +830,8 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
             if (end < la) {
             size -= la - end;
             }
-            memset(UNCACHE_ADDR(page2kva(page) + off), 0, size);
+            memset(page2kva(page) + off, 0, size);
+            fence_i(page2kva(page) + off, size);
             start += size;
             assert((end < la && start == end) || (end >= la && start == la));
         }
@@ -839,7 +845,8 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
             if (end < la) {
             size -= la - end;
             }
-            memset(UNCACHE_ADDR(page2kva(page) + off), 0, size);
+            memset(page2kva(page) + off, 0, size);
+            fence_i(page2kva(page) + off, size);
             start += size;
         }
     }
