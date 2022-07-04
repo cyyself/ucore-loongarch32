@@ -11,6 +11,7 @@
 .global tlbrefill_handler
 .global tlbrefill_redirector
 
+.align 6
 .type tlbrefill_handler, @function
 tlbrefill_handler:
     // Save t0 to KS0
@@ -39,6 +40,7 @@ tlbrefill_redirector:
     csrrd   t0, LISA_CSR_KS0
     b exception_handler
 
+.align 6
 .type exception_handler, @function
 exception_handler:
     // Save t0 and t1

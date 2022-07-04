@@ -30,6 +30,7 @@ V       := @
 TOOLCHAIN:= /opt/loongarch32-linux-gnu
 GCCPREFIX:= loongarch32-linux-gnu-
 
+#QEMU:= ~/Downloads/qemu-system-loongarch32_centos_x86_64
 QEMU:= qemu-system-loongson32
 QEMUOPTS:= -M ls3a5k32 -m 32 -nographic
 

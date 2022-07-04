@@ -29,6 +29,7 @@ uint32_t pte2tlblow(pte_t pte)
     return 0;
   t |= LOONGARCH_TLB_ENTRYL_V;
   t |= LOONGARCH_TLB_ENTRYL_G;
+  t |= LOONGARCH_TLB_MAT_CO;
   if (ptep_u_read(&pte)) {
     t |= LOONGARCH_TLB_PLV3;
   }
