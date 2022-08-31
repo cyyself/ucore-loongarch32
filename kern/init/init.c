@@ -17,9 +17,9 @@ void setup_exception_vector()
     extern unsigned char exception_handler[];
     extern unsigned char tlbrefill_handler[];
     extern unsigned char tlbrefill_redirector[];
-    __lcsr_csrwr(exception_handler, LISA_CSR_EBASE);
-    __lcsr_csrwr(tlbrefill_redirector, LISA_CSR_KS3);
-    __lcsr_csrwr((unsigned int)tlbrefill_handler & 0x1fffffff, LISA_CSR_RFBASE); // For QEMU clear high 3 bit of PA
+    __csrwr(exception_handler, LISA_CSR_EBASE);
+    __csrwr(tlbrefill_redirector, LISA_CSR_KS3);
+    __csrwr((unsigned int)tlbrefill_handler & 0x1fffffff, LISA_CSR_RFBASE); // For QEMU clear high 3 bit of PA
 }
 
 void __noreturn

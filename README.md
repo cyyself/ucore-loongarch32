@@ -8,7 +8,7 @@
 
 ## 编译环境准备
 
-我们已经将所涉及的环境（包含gnu工具链、gdb、qemu）打包为Docker镜像，等待龙芯允许后，我们会公开我们已经完成打包的所有la32r所需环境的Docker镜像。
+我们已经将实验环境打包为Docker镜像，并发布到Docker Hub，可以使用`docker pull chenyy/la32r-env`进行安装，并在该容器内完成编译即可。
 
 ## Makefile操作
 

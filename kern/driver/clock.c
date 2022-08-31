@@ -43,7 +43,7 @@ clock_init(void) {
   period = period / HZ;
   timer_config = period & LISA_CSR_TMCFG_TIMEVAL;
   timer_config |= (LISA_CSR_TMCFG_PERIOD | LISA_CSR_TMCFG_EN);
-  __lcsr_csrwr(timer_config, LISA_CSR_TMCFG);
+  __csrwr(timer_config, LISA_CSR_TMCFG);
   pic_enable(TIMER0_IRQ);
   kprintf("++setup timer interrupts\n");
 }
