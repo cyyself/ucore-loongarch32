@@ -530,7 +530,13 @@ do_exit(int error_code) {
         panic("idleproc exit.\n");
     }
     if (current == initproc) {
+#ifndef LAB8_EX2
+        kprintf("initproc exit.\nLab Finished!\n");
+        intr_enable();
+        while(1) asm volatile("\tidle 0;\n");
+#else
         panic("initproc exit.\n");
+#endif
     }
 	
     struct mm_struct *mm = current->mm;
@@ -1256,7 +1262,9 @@ init_main(void *arg) {
     kprintf("this initproc, pid = %d, name = \"%s\"\n", current->pid, get_proc_name(current));
     kprintf("To U: \"%s\".\n", (const char *)arg);
     kprintf("To U: \"en.., Bye, Bye. :)\"\n");
-    panic("LAB4 Check Passed!");
+    kprintf("LAB4 Check Passed!\n");
+    intr_enable();
+    while(1) asm volatile ("\tidle 0\n");
     return 0;
 #endif
 }
