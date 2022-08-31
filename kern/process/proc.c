@@ -1119,7 +1119,7 @@ cpu_idle(void) {
             schedule();
         }
         else {
-            // asm volatile ("\tidle 0\n"::); // idle cpu to avoid qemu use 100% of single thread
+            asm volatile ("\tidle 0\n"); // idle cpu to avoid qemu use 100% of single thread
         }
     }
 }
