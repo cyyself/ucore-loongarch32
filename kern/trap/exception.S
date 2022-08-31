@@ -17,7 +17,7 @@ tlbrefill_handler:
     // Save t0 to KS0
     csrwr   t0, LISA_CSR_KS0
     // Save PRMD to KS1, and clear PRMD (set PPLV=0 and PIE=0)
-    li      t0, 0
+    li.w    t0, 0
     csrwr   t0, LISA_CSR_PRMD
     csrwr   t0, LISA_CSR_KS1
     // Save EPC(ERA) to KS2
@@ -157,8 +157,8 @@ common_exception:
 
     // set trapframe as function argument
     addi.w  a0, sp, 16
-	li	t0, 0xb0	# PLV=0, IE=0, PG=1
-	csrwr	t0, LISA_CSR_CRMD
+    li.w    t0, 0xb0    # PLV=0, IE=0, PG=1
+    csrwr   t0, LISA_CSR_CRMD
     la.abs  t0, loongarch_trap
     jirl    ra, t0, 0
     //bl loongarch_trap
@@ -168,7 +168,7 @@ common_exception:
 exception_return:
     // restore prmd
     ld.w    t0, sp, 24
-    li      t1, 7
+    li.w    t1, 7
     csrxchg t0, t1, LISA_CSR_PRMD
     // restore era no k0 and k1 for la32, so must do first
     ld.w    t0, sp, 152

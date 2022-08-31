@@ -956,20 +956,34 @@
 	csrwr	\rd, \csr
 .endm
 #else  /* !__ASSEMBLY__ */
-#include <lcsrintrin.h>
+
+/* Assembly instruction format:	rd, ui14.  */
+/* Data types in instruction templates:  USI, USI.  */
+#define __csrrd(/*ui14*/ _1) ((unsigned int) __builtin_loongarch_csrrd ((_1)))
+
+/* Assembly instruction format:	rd, ui14.  */
+/* Data types in instruction templates:  USI, USI, USI.  */
+#define __csrwr(/*unsigned int*/ _1, /*ui14*/ _2) \
+  ((unsigned int) __builtin_loongarch_csrwr ((unsigned int) (_1), (_2)))
+
+/* Assembly instruction format:	rd, rj, ui14.  */
+/* Data types in instruction templates:  USI, USI, USI, USI.  */
+#define __csrxchg(/*unsigned int*/ _1, /*unsigned int*/ _2, /*ui14*/ _3) \
+  ((unsigned int) __builtin_loongarch_csrxchg ((unsigned int) (_1), \
+					       (unsigned int) (_2), (_3)))
 
 void panic(const char *fmt, ...);
 
 static inline void write_csr_index(unsigned idx) {
-	__lcsr_csrxchg(idx, CSR_TLBIDX_IDXM, LISA_CSR_TLBIDX);
+	__csrxchg(idx, CSR_TLBIDX_IDXM, LISA_CSR_TLBIDX);
 }
 
 static inline void write_csr_pagesize(unsigned size) {
-	__lcsr_csrxchg(size << CSR_TLBIDX_SIZE, CSR_TLBIDX_SIZEM, LISA_CSR_TLBIDX);
+	__csrxchg(size << CSR_TLBIDX_SIZE, CSR_TLBIDX_SIZEM, LISA_CSR_TLBIDX);
 }
 
 static inline unsigned read_csr_pagesize(void) {
-	return (__lcsr_csrrd(LISA_CSR_TLBIDX) & CSR_TLBIDX_SIZEM) >> CSR_TLBIDX_SIZE;
+	return (__csrrd(LISA_CSR_TLBIDX) & CSR_TLBIDX_SIZEM) >> CSR_TLBIDX_SIZE;
 }
 
 static inline unsigned mask2size(unsigned mask) {
@@ -977,55 +991,55 @@ static inline unsigned mask2size(unsigned mask) {
 	return 0;
 }
 
-#define read_csr_crmd()			__lcsr_csrrd(LISA_CSR_CRMD)
-#define write_csr_crmd(val)		__lcsr_csrwr(val, LISA_CSR_CRMD)
-#define read_csr_asid()			__lcsr_csrrd(LISA_CSR_ASID)
-#define write_csr_asid(val)		__lcsr_csrwr(val, LISA_CSR_ASID)
-#define read_csr_entrylo0()		__lcsr_csrrd(LISA_CSR_TLBELO0)
-#define write_csr_entrylo0(val)		__lcsr_csrwr(val, LISA_CSR_TLBELO0)
-#define read_csr_entrylo1()		__lcsr_csrrd(LISA_CSR_TLBELO1)
-#define write_csr_entrylo1(val)		__lcsr_csrwr(val, LISA_CSR_TLBELO1)
-#define read_csr_entryhi()		__lcsr_csrrd(LISA_CSR_TLBEHI)
-#define write_csr_entryhi(val)		__lcsr_csrwr(val, LISA_CSR_TLBEHI)
-#define read_csr_exst()			__lcsr_csrrd(LISA_CSR_EXST)
-#define write_csr_exst(val)		__lcsr_csrwr(val, LISA_CSR_EXST)
-#define read_csr_excfg()		__lcsr_csrrd(LISA_CSR_EXCFG)
-#define write_csr_excfg(val)		__lcsr_csrwr(val, LISA_CSR_EXCFG)
-#define read_csr_tlbidx()		__lcsr_csrrd(LISA_CSR_TLBIDX)
-#define write_csr_tlbidx(val)		__lcsr_csrwr(val, LISA_CSR_TLBIDX)
-#define write_csr_flush(val)		__lcsr_csrwr(val, LISA_CSR_FLUSH)
-#define read_csr_cu()			__lcsr_csrrd(LISA_CSR_CU)
-#define write_csr_cu(val)		__lcsr_csrwr(val, LISA_CSR_CU)
-#define read_csr_gscfg()		__lcsr_csrrd(LISA_CSR_GSCFG)
-#define write_csr_gscfg(val)		__lcsr_csrwr(val, LISA_CSR_GSCFG)
-#define read_csr_config1()		__lcsr_csrrd(LISA_CSR_CONFIG1)
-#define write_csr_config1(val)		__lcsr_csrwr(val, LISA_CSR_CONFIG1)
-#define read_csr_config2()		__lcsr_csrrd(LISA_CSR_CONFIG2)
-#define write_csr_config2(val)		__lcsr_csrwr(val, LISA_CSR_CONFIG2)
-#define read_csr_config3()		__lcsr_csrrd(LISA_CSR_CONFIG3)
-#define write_csr_config3(val)		__lcsr_csrwr(val, LISA_CSR_CONFIG3)
-#define read_csr_ftlbpgsize()		__lcsr_csrrd(LISA_CSR_FTLBPGSIZE)
-#define write_csr_ftlbpgsize(val)	__lcsr_csrwr(val, LISA_CSR_FTLBPGSIZE)
-#define read_csr_reduceva()		__lcsr_csrrd(LISA_CSR_REDUCEVA)
-#define write_csr_reduceva(val)		__lcsr_csrwr(val, LISA_CSR_REDUCEVA)
-#define write_csr_tmintclear(val)	__lcsr_csrwr(val, LISA_CSR_TMINTCLR)
+#define read_csr_crmd()			__csrrd(LISA_CSR_CRMD)
+#define write_csr_crmd(val)		__csrwr(val, LISA_CSR_CRMD)
+#define read_csr_asid()			__csrrd(LISA_CSR_ASID)
+#define write_csr_asid(val)		__csrwr(val, LISA_CSR_ASID)
+#define read_csr_entrylo0()		__csrrd(LISA_CSR_TLBELO0)
+#define write_csr_entrylo0(val)		__csrwr(val, LISA_CSR_TLBELO0)
+#define read_csr_entrylo1()		__csrrd(LISA_CSR_TLBELO1)
+#define write_csr_entrylo1(val)		__csrwr(val, LISA_CSR_TLBELO1)
+#define read_csr_entryhi()		__csrrd(LISA_CSR_TLBEHI)
+#define write_csr_entryhi(val)		__csrwr(val, LISA_CSR_TLBEHI)
+#define read_csr_exst()			__csrrd(LISA_CSR_EXST)
+#define write_csr_exst(val)		__csrwr(val, LISA_CSR_EXST)
+#define read_csr_excfg()		__csrrd(LISA_CSR_EXCFG)
+#define write_csr_excfg(val)		__csrwr(val, LISA_CSR_EXCFG)
+#define read_csr_tlbidx()		__csrrd(LISA_CSR_TLBIDX)
+#define write_csr_tlbidx(val)		__csrwr(val, LISA_CSR_TLBIDX)
+#define write_csr_flush(val)		__csrwr(val, LISA_CSR_FLUSH)
+#define read_csr_cu()			__csrrd(LISA_CSR_CU)
+#define write_csr_cu(val)		__csrwr(val, LISA_CSR_CU)
+#define read_csr_gscfg()		__csrrd(LISA_CSR_GSCFG)
+#define write_csr_gscfg(val)		__csrwr(val, LISA_CSR_GSCFG)
+#define read_csr_config1()		__csrrd(LISA_CSR_CONFIG1)
+#define write_csr_config1(val)		__csrwr(val, LISA_CSR_CONFIG1)
+#define read_csr_config2()		__csrrd(LISA_CSR_CONFIG2)
+#define write_csr_config2(val)		__csrwr(val, LISA_CSR_CONFIG2)
+#define read_csr_config3()		__csrrd(LISA_CSR_CONFIG3)
+#define write_csr_config3(val)		__csrwr(val, LISA_CSR_CONFIG3)
+#define read_csr_ftlbpgsize()		__csrrd(LISA_CSR_FTLBPGSIZE)
+#define write_csr_ftlbpgsize(val)	__csrwr(val, LISA_CSR_FTLBPGSIZE)
+#define read_csr_reduceva()		__csrrd(LISA_CSR_REDUCEVA)
+#define write_csr_reduceva(val)		__csrwr(val, LISA_CSR_REDUCEVA)
+#define write_csr_tmintclear(val)	__csrwr(val, LISA_CSR_TMINTCLR)
 
-#define read_csr_perfctrl0()		__lcsr_csrrd(LISA_CSR_PERFCTRL0)
-#define read_csr_perfcntr0()		__lcsr_csrrd(LISA_CSR_PERFCNTR0)
-#define read_csr_perfctrl1()		__lcsr_csrrd(LISA_CSR_PERFCTRL1)
-#define read_csr_perfcntr1()		__lcsr_csrrd(LISA_CSR_PERFCNTR1)
-#define read_csr_perfctrl2()		__lcsr_csrrd(LISA_CSR_PERFCTRL2)
-#define read_csr_perfcntr2()		__lcsr_csrrd(LISA_CSR_PERFCNTR2)
-#define read_csr_perfctrl3()		__lcsr_csrrd(LISA_CSR_PERFCTRL3)
-#define read_csr_perfcntr3()		__lcsr_csrrd(LISA_CSR_PERFCNTR3)
-#define write_csr_perfctrl0(val)	__lcsr_csrwr(val, LISA_CSR_PERFCTRL0)
-#define write_csr_perfcntr0(val)	__lcsr_csrwr(val, LISA_CSR_PERFCNTR0)
-#define write_csr_perfctrl1(val)	__lcsr_csrwr(val, LISA_CSR_PERFCTRL1)
-#define write_csr_perfcntr1(val)	__lcsr_csrwr(val, LISA_CSR_PERFCNTR1)
-#define write_csr_perfctrl2(val)	__lcsr_csrwr(val, LISA_CSR_PERFCTRL2)
-#define write_csr_perfcntr2(val)	__lcsr_csrwr(val, LISA_CSR_PERFCNTR2)
-#define write_csr_perfctrl3(val)	__lcsr_csrwr(val, LISA_CSR_PERFCTRL3)
-#define write_csr_perfcntr3(val)	__lcsr_csrwr(val, LISA_CSR_PERFCNTR3)
+#define read_csr_perfctrl0()		__csrrd(LISA_CSR_PERFCTRL0)
+#define read_csr_perfcntr0()		__csrrd(LISA_CSR_PERFCNTR0)
+#define read_csr_perfctrl1()		__csrrd(LISA_CSR_PERFCTRL1)
+#define read_csr_perfcntr1()		__csrrd(LISA_CSR_PERFCNTR1)
+#define read_csr_perfctrl2()		__csrrd(LISA_CSR_PERFCTRL2)
+#define read_csr_perfcntr2()		__csrrd(LISA_CSR_PERFCNTR2)
+#define read_csr_perfctrl3()		__csrrd(LISA_CSR_PERFCTRL3)
+#define read_csr_perfcntr3()		__csrrd(LISA_CSR_PERFCNTR3)
+#define write_csr_perfctrl0(val)	__csrwr(val, LISA_CSR_PERFCTRL0)
+#define write_csr_perfcntr0(val)	__csrwr(val, LISA_CSR_PERFCNTR0)
+#define write_csr_perfctrl1(val)	__csrwr(val, LISA_CSR_PERFCTRL1)
+#define write_csr_perfcntr1(val)	__csrwr(val, LISA_CSR_PERFCNTR1)
+#define write_csr_perfctrl2(val)	__csrwr(val, LISA_CSR_PERFCTRL2)
+#define write_csr_perfcntr2(val)	__csrwr(val, LISA_CSR_PERFCNTR2)
+#define write_csr_perfctrl3(val)	__csrwr(val, LISA_CSR_PERFCTRL3)
+#define write_csr_perfcntr3(val)	__csrwr(val, LISA_CSR_PERFCNTR3)
 
 /*
  * Manipulate bits in a register.
@@ -1075,9 +1089,9 @@ __BUILD_CSR_OP(tlbidx)
 __BUILD_CSR_OP(cu)
 
 #define set_csr_exst(val)	\
-	__lcsr_csrxchg(val, val, LISA_CSR_EXST)
+	__csrxchg(val, val, LISA_CSR_EXST)
 #define clear_csr_exst(val)	\
-	__lcsr_csrxchg(~(val), (val), LISA_CSR_EXST)
+	__csrxchg(~(val), (val), LISA_CSR_EXST)
 
 #endif /* __ASSEMBLY__ */
 

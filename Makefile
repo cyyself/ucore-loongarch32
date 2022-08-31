@@ -26,12 +26,9 @@ SLASH	:= /
 
 V       := @
 
+GCCPREFIX:= loongarch32r-linux-gnusf-
 
-TOOLCHAIN:= /opt/loongarch32-linux-gnu
-GCCPREFIX:= loongarch32-linux-gnu-
-
-#QEMU:= ~/Downloads/qemu-system-loongarch32_centos_x86_64
-QEMU:= qemu-system-loongson32
+QEMU:= qemu-system-loongarch32
 QEMUOPTS:= -M ls3a5k32 -m 32 -nographic
 
 # use the same qemu as use_for_linux
@@ -47,11 +44,11 @@ TERMINALOPT := -e
 HOSTCC		:= gcc
 HOSTCFLAGS	:= -g -Wall -O2
 
-GDB		:= loongarch32-linux-gnu-gdb --data-directory=/usr/share/gdb
+GDB		:= loongarch32r-linux-gnusf-gdb
 
 CC :=$(GCCPREFIX)gcc
 LAB_FLA	:= $(LAB1) $(LAB2) $(LAB3) $(LAB4) $(LAB5) $(LAB6) $(LAB7) $(LAB8)
-CFLAGS	:= $(LAB_FLA) -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -mno-shared -msoft-float -ggdb -gstabs -mlcsr 
+CFLAGS	:= $(LAB_FLA) -fno-builtin-fprintf -fno-builtin -nostdlib  -nostdinc -g -G0 -Wa,-O0 -fno-pic -msoft-float -ggdb -gstabs 
 CTYPE	:= c S
 
 LD      := $(GCCPREFIX)ld
@@ -92,7 +89,6 @@ ASMSRC    := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S))
 OBJ       += $(patsubst $(SRCDIR)/%.S, $(OBJDIR)/%.o, $(ASMSRC))
 INCLUDES  := $(addprefix -I,$(SRC_DIR))
 INCLUDES  += -I$(SRCDIR)/include
-INCLUDES  += -I$(TOOLCHAIN)/lib/gcc/loongarch32-linux-gnu/8.3.0/include
 
 override ON_FPGA ?= n
 
@@ -151,7 +147,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(V)$(CC) -c $(INCLUDES) $(CFLAGS) $(MACH_DEF) $<  -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.S
-	$(V)$(CC) -c -fno-pic -mno-shared -D__ASSEMBLY__ $(MACH_DEF) $(INCLUDES) -g -G0  $<  -o $@
+	$(V)$(CC) -c -fno-pic -D__ASSEMBLY__ $(MACH_DEF) $(INCLUDES) -g -G0  $<  -o $@
 
 checkdirs: $(BUILD_DIR) $(DEP_DIR)
 
@@ -198,7 +194,7 @@ $(USER_OBJDIR)/%.o: $(USER_SRCDIR)/%.c
 	$(V)$(CC) -c  $(USER_INCLUDE) -I$(SRCDIR)/include $(CFLAGS)  $<  -o $@
 
 $(USER_OBJDIR)/%.o: $(USER_SRCDIR)/%.S
-	$(V)$(CC) -c -fno-pic -mno-shared -D__ASSEMBLY__ $(USER_INCLUDE) -I$(SRCDIR)/include -g -G0  $<  -o $@
+	$(V)$(CC) -c -fno-pic -D__ASSEMBLY__ $(USER_INCLUDE) -I$(SRCDIR)/include -g -G0  $<  -o $@
 
 
 # filesystem
