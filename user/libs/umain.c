@@ -21,7 +21,7 @@ initfd(int fd2, const char *path, uint32_t open_flags) {
 
 void
 umain(int argc, char *argv[]) {
-#ifdef LAB8_EX2
+#ifdef LAB4_EX2
     int fd;
     if ((fd = initfd(0, "stdin:", O_RDONLY)) < 0) {
         warn("open <stdin> failed: %e.\n", fd);

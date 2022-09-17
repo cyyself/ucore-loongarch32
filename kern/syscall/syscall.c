@@ -31,7 +31,7 @@ sys_wait(uint32_t arg[]) {
     return do_wait(pid, store);
 }
 
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
 static int
 sys_exec(uint32_t arg[]) {
     const char *name = (const char *)arg[0];

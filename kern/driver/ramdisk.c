@@ -29,7 +29,7 @@
 //char initrd_begin[], initrd_end[];
 
 bool check_initrd(){
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
   return 1;
 #else
   if(_initrd_begin == _initrd_end){
@@ -74,7 +74,7 @@ void ramdisk_init_struct(struct ide_device* dev)
 {
   memset(dev, 0, sizeof(struct ide_device));
   assert(INITRD_SIZE()%SECTSIZE == 0);
-#ifdef LAB8_EX2
+#ifdef LAB4_EX2
   if(CHECK_INITRD_EXIST()){
     dev->valid = 1;
     dev->sets = ~0;

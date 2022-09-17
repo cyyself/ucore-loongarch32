@@ -182,21 +182,6 @@ void phi_test_condvar (i) {
 
 void phi_take_forks_condvar(int i) {
      down(&(mtp->mutex));
-#ifdef LAB7_EX1
-//--------into routine in monitor--------------
-     // LAB7 EXERCISE1: YOUR CODE
-     // I am hungry
-     // try to get fork
-      // I am hungry
-      state_condvar[i]=HUNGRY; 
-      // try to get fork
-      phi_test_condvar(i); 
-      if (state_condvar[i] != EATING) {
-          kprintf("phi_take_forks_condvar: %d didn't get fork and will wait\n",i);
-          cond_wait(&mtp->cv[i]);
-      }
-//--------leave routine in monitor--------------
-#endif
       if(mtp->next_count>0)
          up(&(mtp->next));
       else
@@ -205,18 +190,6 @@ void phi_take_forks_condvar(int i) {
 
 void phi_put_forks_condvar(int i) {
      down(&(mtp->mutex));
-#ifdef LAB7_EX1
-//--------into routine in monitor--------------
-     // LAB7 EXERCISE1: YOUR CODE
-     // I ate over
-     // test left and right neighbors
-      // I ate over 
-      state_condvar[i]=THINKING;
-      // test left and right neighbors
-      phi_test_condvar(LEFT);
-      phi_test_condvar(RIGHT);
-//--------leave routine in monitor--------------
-#endif
      if(mtp->next_count>0)
         up(&(mtp->next));
      else
@@ -245,31 +218,4 @@ int philosopher_using_condvar(void * arg) { /* arg is the No. of philosopher 0~N
 }
 
 void check_sync(void){
-#ifdef LAB7_EX1
-    int i;
-
-    //check semaphore
-    sem_init(&mutex, 1);
-    for(i=0;i<N;i++){
-        sem_init(&s[i], 0);
-        int pid = kernel_thread(philosopher_using_semaphore, (void *)i, 0);
-        if (pid <= 0) {
-            panic("create No.%d philosopher_using_semaphore failed.\n");
-        }
-        philosopher_proc_sema[i] = find_proc(pid);
-        set_proc_name(philosopher_proc_sema[i], "philosopher_sema_proc");
-    }
-
-    //check condition variable
-    monitor_init(&mt, N);
-    for(i=0;i<N;i++){
-        state_condvar[i]=THINKING;
-        int pid = kernel_thread(philosopher_using_condvar, (void *)i, 0);
-        if (pid <= 0) {
-            panic("create No.%d philosopher_using_condvar failed.\n");
-        }
-        philosopher_proc_condvar[i] = find_proc(pid);
-        set_proc_name(philosopher_proc_condvar[i], "philosopher_condvar_proc");
-    }
-#endif
 }

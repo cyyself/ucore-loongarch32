@@ -101,7 +101,7 @@ extern struct proc_struct *idleproc, *initproc, *current;
   int do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf);
   int do_exit(int error_code);
   int do_yield(void);
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
   int do_execve(const char *name, size_t len, unsigned char *binary, size_t size);
 #else
   int do_execve(const char *name, int argc, const char **argv);

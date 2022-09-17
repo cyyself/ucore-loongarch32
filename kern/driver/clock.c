@@ -17,8 +17,8 @@ static void reload_timer()
 
 int clock_int_handler(void * data)
 {
-#ifdef LAB1_EX4
-  // LAB1 EXERCISE4: YOUR CODE
+#ifdef LAB1_EX2
+  // LAB1 EXERCISE2: YOUR CODE
   // (1) count ticks here
   ticks ++;
 #ifdef _SHOW_100_TICKS
@@ -28,7 +28,7 @@ int clock_int_handler(void * data)
   }
 #endif
 #endif
-#ifdef LAB7_EX1
+#ifdef LAB4_EX1
   run_timer_list();
 #endif
   reload_timer();

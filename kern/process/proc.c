@@ -91,32 +91,6 @@ static struct proc_struct *
 alloc_proc(void) {
     struct proc_struct *proc = kmalloc(sizeof(struct proc_struct));
     if (proc != NULL) {
-    #ifdef LAB4_EX1
-        //LAB4:EXERCISE1 YOUR CODE
-        /*
-        * below fields in proc_struct need to be initialized
-        * enum proc_state state;                      // Process state
-        * int pid;                                    // Process ID
-        * int runs;                                   // the running times of Proces
-        * uintptr_t kstack;                           // Process kernel stack
-        * volatile bool need_resched;                 // bool value: need to be rescheduled to release CPU?
-        * struct proc_struct *parent;                 // the parent process
-        * struct mm_struct *mm;                       // Process's memory management field
-        * struct context context;                     // Switch here to run process
-        * struct trapframe *tf;                       // Trap frame for current interrupt
-        * uintptr_t cr3;                              // CR3 register: the base addr of Page Directroy Table(PDT)
-        * uint32_t flags;                             // Process flag
-        * char name[PROC_NAME_LEN + 1];               // Process name
-        * list_entry_t list_link;                     // Process link list 
-        * list_entry_t hash_link;                     // Process hash list
-        * int exit_code;                              // exit code (be sent to parent proc)
-        * uint32_t wait_state;                        // waiting state
-        * struct proc_struct *cptr, *yptr, *optr;     // relations between processes
-        * struct run_queue *rq;                       // running queue contains Process
-        * list_entry_t run_link;                      // the entry linked in run queue
-        * int time_slice;                             // time slice for occupying the CPU
-        * struct fs_struct *fs_struct;                // the file related info(pwd, files_count, files_array, fs_semaphore) of process
-        */
         proc->state = PROC_UNINIT;
         proc->pid = -1;
         proc->runs = 0;
@@ -138,7 +112,6 @@ alloc_proc(void) {
         proc->rq = NULL;
         list_init(&(proc->run_link));
         proc->time_slice = 0;
-    #endif
     }
     return proc;
    
@@ -452,12 +425,10 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
         goto fork_out;
     }
     ret = -E_NO_MEM;
-    #ifdef LAB4_EX2
-    //LAB4:EXERCISE2 YOUR CODE
     /*
      * Some Useful MACROs, Functions and DEFINEs, you can use them in below implementation.
      * MACROs or Functions:
-     *   alloc_proc:   create a proc struct and init fields (lab4:exercise1)
+     *   alloc_proc:   create a proc struct and init fields
      *   setup_kstack: alloc pages with size KSTACKPAGE as process kernel stack
      *   copy_mm:      process "proc" duplicate OR share process "current"'s mm according clone_flags
      *                 if clone_flags & CLONE_VM, then "share" ; else "duplicate"
@@ -505,9 +476,6 @@ do_fork(uint32_t clone_flags, uintptr_t stack, struct trapframe *tf) {
         wakeup_proc(proc);
 
         ret = proc->pid;
-    #endif
-
-
 fork_out:
     return ret;
 
@@ -530,7 +498,7 @@ do_exit(int error_code) {
         panic("idleproc exit.\n");
     }
     if (current == initproc) {
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
         kprintf("initproc exit.\nLab Finished!\n");
         intr_enable();
         while(1) asm volatile("\tidle 0;\n");
@@ -549,7 +517,7 @@ do_exit(int error_code) {
         }
         current->mm = NULL;
     }
-    put_fs(current); //in LAB8
+    put_fs(current); //in LAB4
     current->state = PROC_ZOMBIE;
     current->exit_code = error_code;
 
@@ -585,7 +553,7 @@ do_exit(int error_code) {
     panic("do_exit will not return!! %d.\n", current->pid);
 }
 
-//load_icode_read is used by load_icode in LAB8
+//load_icode_read is used by load_icode in LAB4
 
 static int
 load_icode_read(int fd, void *buf, size_t len, off_t offset) {
@@ -605,8 +573,8 @@ load_icode_read(int fd, void *buf, size_t len, off_t offset) {
 // 3. copy TEXT/DATA/BSS parts in binary to memory space of process
 // 4. call mm_map to setup user stack, and put parameters into user stack
 // 5. setup trapframe for user environment
-#ifndef LAB8_EX2
-static int load_icode(unsigned char *binary, size_t size) { // load_icode from binary in kernel file, For LAB5-LAB7
+#ifndef LAB4_EX2
+static int load_icode(unsigned char *binary, size_t size) { // load_icode from binary in kernel file, For LAB4
     if (current->mm != NULL) panic("load_icode: current->mm must be empty.\n");
     int ret = -E_NO_MEM;
     struct mm_struct *mm;
@@ -698,8 +666,8 @@ static int load_icode(unsigned char *binary, size_t size) { // load_icode from b
     lcr3(PADDR(mm->pgdir));
     struct trapframe *tf = current->tf;
     memset(tf, 0, sizeof(struct trapframe));
-    #ifdef LAB5_EX1
-    /* LAB5:EXERCISE1 YOUR CODE
+    #ifdef LAB3_EX1
+    /* LAB3:EXERCISE1 YOUR CODE
      * should set tf_era,tf_regs.reg_r[LOONGARCH_REG_SP],tf->tf_prmd
      * NOTICE: If we set trapframe correctly, then the user level process can return to USER MODE from kernel and enable interrupt. So
      *          tf->tf_prmd should be PLV_USER | CSR_CRMD_IE
@@ -727,9 +695,9 @@ static int load_icode(unsigned char *binary, size_t size) { // load_icode from b
         goto out;
 }
 #else
-static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk fd, For LAB8
-    #ifdef LAB8_EX2
-    /* LAB8:EXERCISE2 YOUR CODE  HINT:how to load the file with handler fd  in to process's memory? how to setup argc/argv?
+static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk fd, For LAB4
+    #ifdef LAB4_EX2
+    /* LAB4:EXERCISE2 YOUR CODE  HINT:how to load the file with handler fd  in to process's memory? how to setup argc/argv?
      * MACROs or Functions:
      *  mm_create        - create a mm
      *  setup_pgdir      - setup pgdir in mm
@@ -749,7 +717,7 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
      *    (3.5) callpgdir_alloc_page to allocate pages for BSS, memset zero in these pages
      * (4) call mm_map to setup user stack, and put parameters into user stack
      * (5) setup current process's mm, cr3, reset pgidr (using lcr3 MARCO)
-     * (6) setup trapframe for user environment (You have done in LAB5)
+     * (6) setup trapframe for user environment (You have done in LAB3)
      * (7) store argc and kargv to a0 and a1 register in trapframe
      * (8) if up steps failed, you should cleanup the env.
      */
@@ -901,7 +869,6 @@ static int load_icode(int fd, int argc, char **kargv) { // load_icode from disk 
 }
 #endif
 
-// this function isn't very correct in LAB8
 static void
 put_kargv(int argc, char **kargv) {
     while (argc > 0) {
@@ -937,7 +904,7 @@ failed_cleanup:
 
 // do_execve - call exit_mmap(mm)&pug_pgdir(mm) to reclaim memory space of current process
 //           - call load_icode to setup new memory space accroding binary prog.
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
 int
 do_execve(const char *name, size_t len, unsigned char *binary, size_t size) {
     struct mm_struct *mm = current->mm;
@@ -1125,7 +1092,7 @@ do_kill(int pid) {
 }
 
 // kernel_execve - do SYS_exec syscall to exec a user program called by user_main kernel_thread
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
 static int kernel_execve(const char *name, unsigned char *binary, size_t size) {
     int ret, len = strlen(name);
     asm volatile(
@@ -1168,7 +1135,7 @@ static int kernel_execve(const char *name, const char **argv) {
 #endif
 
 
-#ifndef LAB8_EX2
+#ifndef LAB4_EX2
     #define __KERNEL_EXECVE(name, binary, size) ({                          \
                 kprintf("kernel_execve: pid = %d, name = \"%s\".\n",        \
                         current->pid, name);                                \
@@ -1210,7 +1177,7 @@ static int kernel_execve(const char *name, const char **argv) {
 // user_main - kernel thread used to exec a user program
 static int
 user_main(void *arg) {
-#ifdef LAB8_EX2
+#ifdef LAB4_EX2
     KERNEL_EXECVE(sh);
 #else
     KERNEL_EXECVE(exit);
@@ -1221,9 +1188,9 @@ user_main(void *arg) {
 // init_main - the second kernel thread used to create user_main kernel threads
 static int
 init_main(void *arg) {
-#ifdef LAB5_EX1
+#ifdef LAB3_EX1
 	int ret;
-#ifdef LAB8_EX2
+#ifdef LAB4_EX2
     if ((ret = vfs_set_bootfs("disk0:")) != 0) {
         panic("set boot fs failed: %e.\n", ret);
     }
@@ -1243,7 +1210,7 @@ init_main(void *arg) {
     while (do_wait(0, NULL) == 0) {
         schedule();
     }
-#ifdef LAB8_EX2
+#ifdef LAB4_EX2
     fs_cleanup();
 #endif
     kprintf("all user-mode processes have quit.\n");

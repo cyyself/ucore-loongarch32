@@ -458,7 +458,6 @@ check_boot_pgdir(void) {
   assert(page_ref(p) == 2);
 
   //kprintf("\nHERE\n");
-#ifdef LAB3_EX1
   assert(*(int*)0x100 == 0x1234);
   const char *str = "ucore: Hello world!!";
   strcpy((void *)0x100, str);
@@ -466,7 +465,6 @@ check_boot_pgdir(void) {
 
   *(char *)(page2kva(p) + 0x100) = '\0';
   assert(strlen((const char *)0x100) == 0);
-#endif
   free_page(p);
   free_page(pa2page(PDE_ADDR(boot_pgdir[0])));
   boot_pgdir[0] = 0;
@@ -611,8 +609,8 @@ copy_range(pde_t *to, pde_t *from, uintptr_t start, uintptr_t end, bool share) {
           assert(page!=NULL);
           assert(npage!=NULL);
           int ret=0;
-        #ifdef LAB5_EX2
-        /* LAB5 EXERCISE2: YOUR CODE
+        #ifdef LAB3_EX2
+        /* LAB3 EXERCISE2: YOUR CODE
          * replicate content of page to npage, build the map of phy addr of nage with the linear addr start
          *
          * Some Useful MACROs and DEFINEs, you can use them in below implementation.

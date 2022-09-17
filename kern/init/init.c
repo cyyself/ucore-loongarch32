@@ -42,12 +42,18 @@ kern_init(void) {
     pmm_init();                 // init physical memory management
 #else
     // For LAB1
-    kprintf("LAB1 Check - Please press your keyboard manually and see what happend.\n");
-    intr_enable();
-    while(1) asm volatile ("\tidle 0\n");
+    #if defined(_SHOW_100_TICKS) && defined(_SHOW_SERIAL_INPUT)
+        kprintf("LAB1 Check - Please press your keyboard manually and see what happend.\n");
+        intr_enable();
+        while(1) asm volatile ("\tidle 0\n");
+    #else
+        kprintf("You should manually enable _SHOW_100_TICKS and _SHOW_SERIAL_INPUT in Makefile to do LAB1 Check.\n");
+    #endif
 #endif
 #ifdef LAB3_EX1
     vmm_init();                 // init virtual memory management
+    sched_init();
+    proc_init();                // init process table
 #else
     // For LAB2
     kprintf("LAB2 Check Pass!\n");
@@ -60,9 +66,8 @@ kern_init(void) {
     intr_enable();
     while(1) asm volatile ("\tidle 0\n");
 #endif
-    sched_init();
-    proc_init();                // init process table
-#ifdef LAB8_EX2
+
+#ifdef LAB4_EX1
     check_initrd();
     ide_init();
     fs_init();
