@@ -93,7 +93,7 @@ alloc_proc(void) {
     if (proc != NULL) {
     #ifdef LAB4_EX1
         //LAB4:EXERCISE1 YOUR CODE
-        /*
+        /*修改一些东西
         * below fields in proc_struct need to be initialized
         * enum proc_state state;                      // Process state
         * int pid;                                    // Process ID
