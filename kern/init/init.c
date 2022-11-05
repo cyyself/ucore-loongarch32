@@ -48,6 +48,8 @@ kern_init(void) {
         while(1) asm volatile ("\tidle 0\n");
     #else
         kprintf("You should manually enable _SHOW_100_TICKS and _SHOW_SERIAL_INPUT in Makefile to do LAB1 Check.\n");
+        intr_enable();
+        while(1) asm volatile ("\tidle 0\n");
     #endif
 #endif
 #ifdef LAB3_EX1
@@ -57,12 +59,6 @@ kern_init(void) {
 #else
     // For LAB2
     kprintf("LAB2 Check Pass!\n");
-    intr_enable();
-    while(1) asm volatile ("\tidle 0\n");
-#endif
-#ifndef LAB4_EX1
-    // For LAB3
-    kprintf("LAB3 Check Pass!\n");
     intr_enable();
     while(1) asm volatile ("\tidle 0\n");
 #endif
