@@ -499,7 +499,7 @@ do_exit(int error_code) {
     }
     if (current == initproc) {
 #ifndef LAB4_EX2
-        kprintf("initproc exit.\nLab Finished!\n");
+        kprintf("initproc exit.\nLab3 Check Pass!\n");
         intr_enable();
         while(1) asm volatile("\tidle 0;\n");
 #else
