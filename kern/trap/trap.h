@@ -5,5 +5,5 @@
 #include <loongarch_trapframe.h>
 
 void set_exception_handler();
-
+void print_trapframe(struct trapframe *tf);
 #endif

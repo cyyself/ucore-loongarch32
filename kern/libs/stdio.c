@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <console.h>
 #include <loongarch.h>
+#include <printfmt.h>
 
 /* HIGH level console I/O */
 

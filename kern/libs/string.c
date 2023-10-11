@@ -1,6 +1,6 @@
 #include <string.h>
 #include <loongarch.h>
-
+#include <kmalloc.h>
 /* *
  * strlen - calculate the length of the string @s, not including
  * the terminating '\0' character.

@@ -9,7 +9,11 @@
 #include <proc.h>
 #include <sched.h>
 #include <ide.h>
+#include <console.h>
 #include <fs.h>
+#include <la32_tlb.h>
+#include <clock.h>
+#include <stdio.h>
 
 
 void setup_exception_vector()

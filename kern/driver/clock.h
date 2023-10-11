@@ -6,6 +6,6 @@
 extern volatile size_t ticks;
 
 void clock_init(void);
-
+int clock_int_handler(void * data);
 #endif /* !__KERN_DRIVER_CLOCK_H__ */
 

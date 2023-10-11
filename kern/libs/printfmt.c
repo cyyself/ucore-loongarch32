@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <printfmt.h>
 
 /* *
  * Space or zero padding and a field width are supported for the numeric
@@ -116,7 +117,21 @@ printnum(void (*putch)(int, void*, int), int fd, void *putdat,
     putch("0123456789abcdef"[mod], putdat, fd);
 }
 
+/* *
+ * printfmt - format a string and print it by using putch
+ * @putch:      specified putch function, print a single character
+ * @fd:         file descriptor
+ * @putdat:     used by @putch function
+ * @fmt:        the format string to use
+ * */
+void
+printfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt, ...) {
+    va_list ap;
 
+    va_start(ap, fmt);
+    vprintfmt(putch, fd, putdat, fmt, ap);
+    va_end(ap);
+}
 
 /* *
  * vprintfmt - format a string and print it by using putch, it's called with a va_list
@@ -279,21 +294,7 @@ vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt,
     }
 }
 
-/* *
- * printfmt - format a string and print it by using putch
- * @putch:      specified putch function, print a single character
- * @fd:         file descriptor
- * @putdat:     used by @putch function
- * @fmt:        the format string to use
- * */
-void
-printfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt, ...) {
-    va_list ap;
 
-    va_start(ap, fmt);
-    vprintfmt(putch, fd, putdat, fmt, ap);
-    va_end(ap);
-}
 
 /* sprintbuf is used to save enough information of a buffer */
 struct sprintbuf {
@@ -313,22 +314,6 @@ sprintputch(int ch, struct sprintbuf *b) {
     if (b->buf < b->ebuf) {
         *b->buf ++ = ch;
     }
-}
-
-/* *
- * snprintf - format a string and place it in a buffer
- * @str:        the buffer to place the result into
- * @size:       the size of buffer, including the trailing null space
- * @fmt:        the format string to use
- * */
-int
-snprintf(char *str, size_t size, const char *fmt, ...) {
-    va_list ap;
-    int cnt;
-    va_start(ap, fmt);
-    cnt = vsnprintf(str, size, fmt, ap);
-    va_end(ap);
-    return cnt;
 }
 
 /* *
@@ -357,4 +342,23 @@ vsnprintf(char *str, size_t size, const char *fmt, va_list ap) {
     *b.buf = '\0';
     return b.cnt;
 }
+
+
+/* *
+ * snprintf - format a string and place it in a buffer
+ * @str:        the buffer to place the result into
+ * @size:       the size of buffer, including the trailing null space
+ * @fmt:        the format string to use
+ * */
+int
+snprintf(char *str, size_t size, const char *fmt, ...) {
+    va_list ap;
+    int cnt;
+    va_start(ap, fmt);
+    cnt = vsnprintf(str, size, fmt, ap);
+    va_end(ap);
+    return cnt;
+}
+
+
 

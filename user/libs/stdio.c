@@ -2,7 +2,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <loongarch.h>
-
+#include <syscall.h>
+#include <printfmt.h>
+#include <file.h>
 /* HIGH level console I/O */
 
 /* *
@@ -10,7 +12,7 @@
  * increace the value of counter pointed by @cnt.
  * */
 static void
-cputch(int c, int *cnt) {
+cputch(int c, void * s, int *cnt) {
     sys_putc(c);
     (*cnt) ++;
 }
@@ -28,7 +30,7 @@ cputch(int c, int *cnt) {
 int
 vcprintf(const char *fmt, va_list ap) {
     int cnt = 0;
-    vprintfmt(cputch, NO_FD, &cnt, fmt, ap);
+    vprintfmt(cputch, (int*)NO_FD, &cnt, fmt, ap);
     return cnt;
 }
 
@@ -96,9 +98,9 @@ cputs(const char *str) {
     int cnt = 0;
     char c;
     while ((c = *str ++) != '\0') {
-        cputch(c, &cnt);
+        cputch(c, NULL, &cnt);
     }
-    cputch('\n', &cnt);
+    cputch('\n', NULL, &cnt);
     return cnt;
 }
 
@@ -110,14 +112,14 @@ fputch(char c, int *cnt, int fd) {
 }
 
 int
-vfprintf(int fd, const char *fmt, va_list ap) {
+vfprintf(int *fd, const char *fmt, va_list ap) {
     int cnt = 0;
     vprintfmt((void*)fputch, fd, &cnt, fmt, ap);
     return cnt;
 }
 
 int
-fprintf(int fd, const char *fmt, ...) {
+fprintf(int *fd, const char *fmt, ...) {
     va_list ap;
 
     va_start(ap, fmt);

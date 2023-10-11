@@ -8,6 +8,7 @@
 #include <stat.h>
 #include <dirent.h>
 #include <sysfile.h>
+#include <trap.h>
 
 extern volatile int ticks;
 

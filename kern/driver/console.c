@@ -90,22 +90,7 @@ serial_proc_data(void) {
     return c;
 }
 
-
-void serial_int_handler(void *opaque)
-{
-    unsigned char id = inb(COM1+COM_IIR);
-    if(id & 0x01)
-        return ;
-    //int c = serial_proc_data();
-    int c = cons_getc();
-#if defined(LAB1_EX3) && defined(_SHOW_SERIAL_INPUT)
-    // LAB1 EXERCISE3: YOUR CODE
-#endif
-#ifdef LAB4_EX2
-    extern void dev_stdin_write(char c);
-    dev_stdin_write(c);
-#endif
-}
+#define CONSBUFSIZE 512
 
 /* *
  * Here we manage the console input buffer, where we stash characters
@@ -113,7 +98,7 @@ void serial_int_handler(void *opaque)
  * interrupt occurs.
  * */
 
-#define CONSBUFSIZE 512
+
 
 static struct {
     uint8_t buf[CONSBUFSIZE];
@@ -138,13 +123,6 @@ cons_intr(int (*proc)(void)) {
     }
 }
 
-/* serial_intr - try to feed input characters from serial port */
-void
-serial_intr(void) {
-    if (serial_exists) {
-        cons_intr(serial_proc_data);
-    }
-}
 
 /* cons_init - initializes the console devices */
 void
@@ -156,6 +134,16 @@ cons_init(void) {
     }
 }
 
+
+/* serial_intr - try to feed input characters from serial port */
+void
+serial_intr(void) {
+    if (serial_exists) {
+        cons_intr(serial_proc_data);
+    }
+}
+
+
 /* cons_putc - print a single character @c to console devices */
 void
 cons_putc(int c) {
@@ -166,6 +154,9 @@ cons_putc(int c) {
     }
     local_intr_restore(intr_flag);
 }
+
+
+
 
 /* *
  * cons_getc - return the next input character from console,
@@ -192,5 +183,24 @@ cons_getc(void) {
     }
     local_intr_restore(intr_flag);
     return c;
+}
+
+
+
+void serial_int_handler(void *opaque)
+{
+    unsigned char id = inb(COM1+COM_IIR);
+    if(id & 0x01)
+        return ;
+    //int c = serial_proc_data();
+    int c = cons_getc();
+#if defined(LAB1_EX3) && defined(_SHOW_SERIAL_INPUT)
+    // LAB1 EXERCISE3: YOUR CODE
+    kprintf("press key is: %c\n",c);
+#endif
+#ifdef LAB4_EX2
+    extern void dev_stdin_write(char c);
+    dev_stdin_write(c);
+#endif
 }
 

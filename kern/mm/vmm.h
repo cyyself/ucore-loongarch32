@@ -65,7 +65,10 @@ int dup_mmap(struct mm_struct *to, struct mm_struct *from);
 void exit_mmap(struct mm_struct *mm);
 uintptr_t get_unmapped_area(struct mm_struct *mm, size_t len);
 int mm_brk(struct mm_struct *mm, uintptr_t addr, size_t len);
-
+int mm_map(struct mm_struct *mm, uintptr_t addr, size_t len, uint32_t vm_flags,
+    struct vma_struct **vma_store);
+bool
+copy_string(struct mm_struct *mm, char *dst, const char *src, size_t maxn) ;
 static inline int
 mm_count(struct mm_struct *mm) {
     return atomic_read(&(mm->mm_count));

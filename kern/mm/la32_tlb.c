@@ -1,5 +1,6 @@
 #include <loongarch_tlb.h>
 #include <memlayout.h>
+#include <la32_tlb.h>
 
 // invalidate both TLB 
 // (clean and flush, meaning we write the data back)

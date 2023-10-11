@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <printfmt.h>
 
 /* *
  * Space or zero padding and a field width are supported for the numeric
@@ -88,7 +89,7 @@ getint(va_list *ap, int lflag) {
  * @padc:       character that padded on the left if the actual width is less than @width
  * */
 static void
-printnum(void (*putch)(int, void*, int), int fd, void *putdat,
+printnum(void (*putch)(int, void*, int*), int *fd, void *putdat,
         unsigned int num, unsigned int base, int width, int padc) {
     unsigned int result = num;
     unsigned int mod = 0;
@@ -116,8 +117,88 @@ printnum(void (*putch)(int, void*, int), int fd, void *putdat,
     putch("0123456789abcdef"[mod], putdat, fd);
 }
 
+/* *
+ * printfmt - format a string and print it by using putch
+ * @putch:      specified putch function, print a single character
+ * @fd:         file descriptor
+ * @putdat:     used by @putch function
+ * @fmt:        the format string to use
+ * */
+void
+printfmt(void (*putch)(int, void*, int*), int *fd, void *putdat, const char *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+    vprintfmt(putch, fd, putdat, fmt, ap);
+    va_end(ap);
+}
 
 
+/* sprintbuf is used to save enough information of a buffer */
+struct sprintbuf {
+    char *buf;          // address pointer points to the first unused memory
+    char *ebuf;         // points the end of the buffer
+    int cnt;            // the number of characters that have been placed in this buffer
+};
+
+/* *
+ * sprintputch - 'print' a single character in a buffer
+ * @ch:         the character will be printed
+ * @b:          the buffer to place the character @ch
+ * */
+static void
+sprintputch(int ch, struct sprintbuf *b) {
+    b->cnt ++;
+    if (b->buf < b->ebuf) {
+        *b->buf ++ = ch;
+    }
+}
+
+
+
+
+/* *
+ * vsnprintf - format a string and place it in a buffer, it's called with a va_list
+ * instead of a variable number of arguments
+ * @str:        the buffer to place the result into
+ * @size:       the size of buffer, including the trailing null space
+ * @fmt:        the format string to use
+ * @ap:         arguments for the format string
+ *
+ * The return value is the number of characters which would be generated for the
+ * given input, excluding the trailing '\0'.
+ *
+ * Call this function if you are already dealing with a va_list.
+ * Or you probably want snprintf() instead.
+ * */
+int
+vsnprintf(char *str, size_t size, const char *fmt, va_list ap) {
+    struct sprintbuf b = {str, str + size - 1, 0};
+    if (str == NULL || b.buf > b.ebuf) {
+        return -E_INVAL;
+    }
+    // print the string to the buffer
+    vprintfmt((void*)sprintputch, (int*)NO_FD, &b, fmt, ap);
+    // null terminate the buffer
+    *b.buf = '\0';
+    return b.cnt;
+}
+
+/* *
+ * snprintf - format a string and place it in a buffer
+ * @str:        the buffer to place the result into
+ * @size:       the size of buffer, including the trailing null space
+ * @fmt:        the format string to use
+ * */
+int
+snprintf(char *str, size_t size, const char *fmt, ...) {
+    va_list ap;
+    int cnt;
+    va_start(ap, fmt);
+    cnt = vsnprintf(str, size, fmt, ap);
+    va_end(ap);
+    return cnt;
+}
 /* *
  * vprintfmt - format a string and print it by using putch, it's called with a va_list
  * instead of a variable number of arguments
@@ -131,7 +212,7 @@ printnum(void (*putch)(int, void*, int), int fd, void *putdat,
  * Or you probably want printfmt() instead.
  * */
 void
-vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt, va_list ap) {
+vprintfmt(void (*putch)(int, void *, int *), int *fd, void *putdat, const char *fmt, va_list ap) {
     register const char *p;
     register int ch, err;
     unsigned long long num;
@@ -278,83 +359,3 @@ vprintfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt,
         }
     }
 }
-
-/* *
- * printfmt - format a string and print it by using putch
- * @putch:      specified putch function, print a single character
- * @fd:         file descriptor
- * @putdat:     used by @putch function
- * @fmt:        the format string to use
- * */
-void
-printfmt(void (*putch)(int, void*, int), int fd, void *putdat, const char *fmt, ...) {
-    va_list ap;
-
-    va_start(ap, fmt);
-    vprintfmt(putch, fd, putdat, fmt, ap);
-    va_end(ap);
-}
-
-/* sprintbuf is used to save enough information of a buffer */
-struct sprintbuf {
-    char *buf;          // address pointer points to the first unused memory
-    char *ebuf;         // points the end of the buffer
-    int cnt;            // the number of characters that have been placed in this buffer
-};
-
-/* *
- * sprintputch - 'print' a single character in a buffer
- * @ch:         the character will be printed
- * @b:          the buffer to place the character @ch
- * */
-static void
-sprintputch(int ch, struct sprintbuf *b) {
-    b->cnt ++;
-    if (b->buf < b->ebuf) {
-        *b->buf ++ = ch;
-    }
-}
-
-/* *
- * snprintf - format a string and place it in a buffer
- * @str:        the buffer to place the result into
- * @size:       the size of buffer, including the trailing null space
- * @fmt:        the format string to use
- * */
-int
-snprintf(char *str, size_t size, const char *fmt, ...) {
-    va_list ap;
-    int cnt;
-    va_start(ap, fmt);
-    cnt = vsnprintf(str, size, fmt, ap);
-    va_end(ap);
-    return cnt;
-}
-
-/* *
- * vsnprintf - format a string and place it in a buffer, it's called with a va_list
- * instead of a variable number of arguments
- * @str:        the buffer to place the result into
- * @size:       the size of buffer, including the trailing null space
- * @fmt:        the format string to use
- * @ap:         arguments for the format string
- *
- * The return value is the number of characters which would be generated for the
- * given input, excluding the trailing '\0'.
- *
- * Call this function if you are already dealing with a va_list.
- * Or you probably want snprintf() instead.
- * */
-int
-vsnprintf(char *str, size_t size, const char *fmt, va_list ap) {
-    struct sprintbuf b = {str, str + size - 1, 0};
-    if (str == NULL || b.buf > b.ebuf) {
-        return -E_INVAL;
-    }
-    // print the string to the buffer
-    vprintfmt((void*)sprintputch, NO_FD, &b, fmt, ap);
-    // null terminate the buffer
-    *b.buf = '\0';
-    return b.cnt;
-}
-

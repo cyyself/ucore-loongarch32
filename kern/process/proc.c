@@ -17,6 +17,7 @@
 #include <sysfile.h>
 #include <loongarch_trapframe.h>
 #include <loongarch.h>
+#include <la32_tlb.h>
 
 /* ------------- process/thread mechanism design&implementation -------------
 (an simplified Linux process/thread mechanism )

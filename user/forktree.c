@@ -1,6 +1,7 @@
 #include <ulib.h>
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
+#include <printfmt.h>
 
 #define DEPTH 2
 

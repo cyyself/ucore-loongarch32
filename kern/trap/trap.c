@@ -11,6 +11,8 @@
 #include <error.h>
 #include <glue_pgmap.h>
 #include <loongarch_tlb.h>
+#include <syscall.h>
+#include <vmm.h>
 
 #define EXCCODE_GENERIC 32
 #define vec_size 512
@@ -61,8 +63,6 @@ print_trapframe(struct trapframe *tf) {
 
 static void interrupt_handler(struct trapframe *tf)
 {
-  extern clock_int_handler(void*);
-  extern serial_int_handler(void*);
   int i;
   for(i=0;i<13;i++){
     if(tf->tf_estat & (1<<i)){

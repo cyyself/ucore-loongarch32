@@ -8,6 +8,8 @@
 #include <default_pmm.h>
 #include <sync.h>
 #include <error.h>
+#include <la32_tlb.h>
+#include <kmalloc.h>
 
 
 
@@ -213,6 +215,30 @@ pmm_init(void) {
 pte_t *
 get_pte(pde_t *pgdir, uintptr_t la, bool create) {
 #ifdef LAB2_EX2
+    pde_t *pdep = NULL; // find page directory entry
+    pdep = pgdir + PDX(la);
+    
+    if ( ((*pdep)&PTE_P) == 0 ) { // check if entry is not present
+        // check if creating is needed, then alloc page for page table
+        if(!create) return NULL;
+        // CAUTION: this page is used for page table, not for common data page
+        // set page reference
+        struct Page* new_pte = alloc_page();
+        if(!new_pte) return NULL;
+        page_ref_inc(new_pte); 
+        uintptr_t pa = (uintptr_t)page2kva(new_pte); // get linear address of page
+        // clear page content using memset
+        memset((void*)pa, 0, PGSIZE);
+        //kprintf("@@@ %x\n", pa);
+        // set page directory entry's permission
+        *pdep = PADDR(pa);
+        (*pdep) |= (PTE_U|PTE_P|PTE_W);
+    }
+    pte_t *ret = (pte_t*)KADDR((uintptr_t)((pte_t*)(PDE_ADDR(*pdep))+PTX(la)));
+
+    //kprintf("@@GET_PTE %x %x %x\n", *pdep, ret, *ret);
+    return  ret;// return page table entry
+#else
     /* LAB2 EXERCISE2: YOUR CODE
      *
      * If you need to visit a physical address, please use KADDR()
@@ -266,6 +292,20 @@ get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store) {
 static inline void
 page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep) {
 #ifdef LAB2_EX3
+	if (ptep && (*ptep & PTE_P)) { // check if page directory is present
+		struct Page *page = pte2page(*ptep); // find corresponding page to pte
+		// decrease page reference
+    page_ref_dec(page);
+		// and free it when reach 0
+    if(page_ref(page) == 0){
+       free_page(page);
+    }
+		// clear page directory entry
+    *ptep = 0;
+	}
+		// flush tlb
+  tlb_invalidate_all();
+#else
     /* LAB2 EXERCISE3: YOUR CODE
      *
      * Please check if ptep is valid, and tlb must be manually updated if mapping is updated

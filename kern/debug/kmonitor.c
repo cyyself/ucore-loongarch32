@@ -3,7 +3,6 @@
 #include <trap.h>
 #include <kmonitor.h>
 #include <kdebug.h>
-
 /* *
  * Simple command-line kernel monitor useful for controlling the
  * kernel and exploring the system interactively.

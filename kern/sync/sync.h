@@ -6,6 +6,7 @@
 #include <mmu.h>
 
 #include <atomic.h>
+#include <sched.h>
 
 
 typedef volatile bool lock_t;
