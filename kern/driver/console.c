@@ -185,18 +185,40 @@ cons_getc(void) {
     return c;
 }
 
-
-
 void serial_int_handler(void *opaque)
 {
+
+    /*
+    此处串口处理函数的执行逻辑：（此处仅描述console.c文件范围内的执行逻辑）
+    首先当ucore启动后，...,然后会根据serial_init()函数完成COM1的初始化（包括波特率、数据位、校验位等的串口基本配置），同时使其能进入中断
+    1.当有外设进行输入时，会触发COM1串口的中断处理函数
+    2.读取COM_IIR位是否为0x01,确定是COM1的中断状态是否已经就绪
+    3.然后从Console_buffer里面获取串口输入的字符(
+        此处包括以下几个操作：
+        1.首先在serial_proc_data函数中根据LSR和LSR_Data的有效性判断RX寄存器是否有有效的数据，如果有，读出来
+        2.然后在cons_intr函数中将读出来的串口RX中的数据存到Console_buffer里面
+        3.在cons_getc函数中把buffer里面的数据读出来
+        期间利用local_intr_save(intr_flag)关闭中断，然后完成处理后利用local_intr_restore(intr_flag)使中断重新开启
+        )
+    4.然后利用打印输出的API--kprintf，输出我们输入的字符，完成实验
+    5.
+    */
     unsigned char id = inb(COM1+COM_IIR);
     if(id & 0x01)
         return ;
+
+    /*此处两种方式读数据都可行，前者是直接从RX寄存器中读的，后者是从Console_buffer里面读出来的*/
     //int c = serial_proc_data();
     int c = cons_getc();
+
+
 #if defined(LAB1_EX3) && defined(_SHOW_SERIAL_INPUT)
+
     // LAB1 EXERCISE3: YOUR CODE
+    /*利用打印输出的api,输出相应的字符*/
     kprintf("press key is: %c\n",c);
+
+
 #endif
 #ifdef LAB4_EX2
     extern void dev_stdin_write(char c);

@@ -20,11 +20,16 @@ int clock_int_handler(void * data)
 #ifdef LAB1_EX2
   // LAB1 EXERCISE2: YOUR CODE
   // (1) count ticks here
+
+  /*每次进入时钟终端时，就+1*/
   ticks++;
+  
 #ifdef _SHOW_100_TICKS
   // (2) if ticks % 100 == 0 then call kprintf to print "100 ticks"
+
+  /*当累积加了100次，就使用串口输出api输出“100 ticks*/
   if(ticks % 100 == 0){
-    kprintf("100 ticks\n");
+    kprintf("100 ticks\n");    
   }
 #endif
 #endif
