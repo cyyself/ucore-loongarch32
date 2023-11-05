@@ -215,29 +215,36 @@ pmm_init(void) {
 pte_t *
 get_pte(pde_t *pgdir, uintptr_t la, bool create) {
 #ifdef LAB2_EX2
-    pde_t *pdep = NULL; // find page directory entry
+    //查找页面页表项
+    pde_t *pdep = NULL;
     pdep = pgdir + PDX(la);
     
-    if ( ((*pdep)&PTE_P) == 0 ) { // check if entry is not present
-        // check if creating is needed, then alloc page for page table
+    //判断页表项是否存在
+    if ( ((*pdep)&PTE_P) == 0 ) { 
+
+        // 检查是否需要创建，然后为页面表分配页面
         if(!create) return NULL;
-        // CAUTION: this page is used for page table, not for common data page
-        // set page reference
+
+        // 建立页表引用
         struct Page* new_pte = alloc_page();
         if(!new_pte) return NULL;
         page_ref_inc(new_pte); 
-        uintptr_t pa = (uintptr_t)page2kva(new_pte); // get linear address of page
-        // clear page content using memset
+
+        // 获得页面的虚拟地址
+        uintptr_t pa = (uintptr_t)page2kva(new_pte);
+
+        // 使用 memset 清除页面内容
         memset((void*)pa, 0, PGSIZE);
-        //kprintf("@@@ %x\n", pa);
-        // set page directory entry's permission
+
+        // 设置页表项的权限
         *pdep = PADDR(pa);
         (*pdep) |= (PTE_U|PTE_P|PTE_W);
     }
+    // 将虚拟地址转换成物理地址
     pte_t *ret = (pte_t*)KADDR((uintptr_t)((pte_t*)(PDE_ADDR(*pdep))+PTX(la)));
 
-    //kprintf("@@GET_PTE %x %x %x\n", *pdep, ret, *ret);
-    return  ret;// return page table entry
+    //// 返回页表项
+    return  ret;
 #else
     /* LAB2 EXERCISE2: YOUR CODE
      *
@@ -292,18 +299,24 @@ get_page(pde_t *pgdir, uintptr_t la, pte_t **ptep_store) {
 static inline void
 page_remove_pte(pde_t *pgdir, uintptr_t la, pte_t *ptep) {
 #ifdef LAB2_EX3
-	if (ptep && (*ptep & PTE_P)) { // check if page directory is present
-		struct Page *page = pte2page(*ptep); // find corresponding page to pte
-		// decrease page reference
+  //检查页表项是否存在
+	if (ptep && (*ptep & PTE_P)) {
+
+    //找到页表项对应的页面
+		struct Page *page = pte2page(*ptep);
+
+		//减少页表项的饮用 
     page_ref_dec(page);
-		// and free it when reach 0
+		
+    //当引用数为0时释放页表
     if(page_ref(page) == 0){
        free_page(page);
     }
-		// clear page directory entry
+		
+ // 清除页面目录条目
     *ptep = 0;
 	}
-		// flush tlb
+		//清空快表
   tlb_invalidate_all();
 #else
     /* LAB2 EXERCISE3: YOUR CODE
